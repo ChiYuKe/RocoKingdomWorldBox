@@ -225,7 +225,39 @@ class DetailPanel extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(pet.name, style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold)),
+                  // 使用 Row 将名字和属性图片并排
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        pet.name, 
+                        style: const TextStyle(
+                          color: Colors.white, 
+                          fontSize: 32, 
+                          fontWeight: FontWeight.bold
+                        )
+                      ),
+                      const SizedBox(width: 5), // 名字和图标的间距
+                      // 属性图标
+                      Image.asset(
+                        'assets/ui/types/type_${pet.type.name}.png', 
+                        width: 35,
+                        height: 35,
+                        fit: BoxFit.contain,
+                        // 如果图片不存在，显示一个圆点占位，颜色随属性变化
+                        errorBuilder: (context, _, __) => Container(
+                          width: 30,
+                          height: 30,
+                          decoration: BoxDecoration(
+                            color: accentColor,
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  // -------------------------------------------
+
                   Text("系列：${pet.type.label} | 编号：No.${pet.id}", style: const TextStyle(color: Colors.white54, fontSize: 13)),
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 12),

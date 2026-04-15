@@ -64,6 +64,7 @@ flutter:
     - assets/avatars/
     - assets/portraits/
     - assets/ui/
+    - assets/ui/types/
 
 
   # 字体资源声明
