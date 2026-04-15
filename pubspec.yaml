@@ -63,16 +63,27 @@ flutter:
     - assets/images/
     - assets/avatars/
     - assets/portraits/
+    - assets/ui/
 
 
   # 字体资源声明
   fonts:
-    - family: RocoFont  # 你在代码中引用的名字，可以自定义
+    - family: FZLTYJT  
+      fonts:
+        - asset: assets/fonts/FZLTYJT.ttf
+          weight: 500  # 如果有粗体文件，指定
+    - family: MIANFEIZITI  
       fonts:
         - asset: assets/fonts/MIANFEIZITI.ttf
-        - asset: assets/fonts/FZLTYJT.ttf
         - asset: assets/fonts/RUNEREGULAR.ttf
-          weight: 700  # 如果有粗体文件，指定
+          weight: 500  
+
+    - family: RUNEREGULAR  
+      fonts:
+        - asset: assets/fonts/RUNEREGULAR.ttf
+          weight: 500  
+          
+          
 
 
 

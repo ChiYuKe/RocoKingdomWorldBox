@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(const RocoPokedexApp());
 
-// 1. 定义精灵属性类型及对应的颜色主题（莫兰迪色系） - 保持原样
+// 1. 定义精灵属性类型及对应的颜色主题
 enum PetType {
   fire(Color.fromARGB(255, 182, 89, 77), "火系"),   
   water(Color.fromRGBO(109, 150, 201, 1), "水系"),  
@@ -30,13 +30,17 @@ class RocoPokedexApp extends StatelessWidget {
   const RocoPokedexApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true),
-      home: const MainScaffold(),
-    );
-  }
+    Widget build(BuildContext context) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          useMaterial3: true,
+          //设置全局默认字体
+          fontFamily: 'MIANFEIZITI', 
+        ),
+        home: const MainScaffold(),
+      );
+    }
 }
 
 class MainScaffold extends StatefulWidget {
@@ -51,11 +55,11 @@ class _MainScaffoldState extends State<MainScaffold> {
   int _selectedIndex = 0;
 
   final List<Pet> _pokedex = [
-    Pet(name: "烈火战神", id: "001", type: PetType.fire, stats: [0.85, 0.95, 0.90, 0.60, 0.70, 0.65]),
-    Pet(name: "圣藤草王", id: "002", type: PetType.grass, stats: [0.90, 0.70, 0.50, 0.85, 0.95, 0.80]),
-    Pet(name: "海皇波塞冬", id: "003", type: PetType.water, stats: [0.80, 0.85, 0.75, 0.95, 0.70, 0.90]),
-    Pet(name: "迪莫", id: "004", type: PetType.light, stats: [0.75, 0.90, 0.85, 0.80, 0.75, 0.75]),
-    Pet(name: "冥暗幽灵", id: "005", type: PetType.dark, stats: [0.70, 0.75, 0.60, 0.90, 0.65, 0.95]),
+    Pet(name: "迪莫", id: "001", type: PetType.light, stats: [120, 80, 80, 105, 105, 92]),
+    Pet(name: "喵喵", id: "002", type: PetType.grass, stats: [65, 66, 66, 49, 91, 33]),
+    Pet(name: "喵呜", id: "003", type: PetType.grass, stats: [80, 85, 75, 95, 70, 90]),
+    Pet(name: "魔力猫", id: "004", type: PetType.grass, stats: [75, 90, 85, 80, 75, 75]),
+    Pet(name: "火花", id: "005", type: PetType.fire, stats: [70, 75, 60, 90, 65, 95]),
   ];
 
   @override
@@ -114,7 +118,6 @@ class _MainScaffoldState extends State<MainScaffold> {
   }
 }
 
-// --- 精灵列表组件（使用 assets/avatars/） ---
 class PetListView extends StatelessWidget {
   final List<Pet> pokedex;
   final int selectedIndex;
@@ -149,7 +152,6 @@ class PetListView extends StatelessWidget {
                     contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     tileColor: isSelected ? Colors.black87 : Colors.white.withOpacity(0.15),
-                    
                     leading: Container(
                       width: 48,
                       height: 48,
@@ -159,22 +161,15 @@ class PetListView extends StatelessWidget {
                       ),
                       child: ClipOval(
                         child: Image.asset(
-                          'assets/avatars/pet_${pet.id}.png', // 这里改为加载头像路径
+                          'assets/avatars/pet_${pet.id}.png',
                           fit: BoxFit.contain,
                           errorBuilder: (context, error, stackTrace) => 
                             const Icon(Icons.pets, color: Colors.white30, size: 20),
                         ),
                       ),
                     ),
-                    
-                    title: Text(
-                      pet.name,
-                      style: const TextStyle(color: Colors.white, fontSize: 15),
-                    ),
-                    subtitle: Text(
-                      "No.${pet.id}",
-                      style: TextStyle(color: isSelected ? Colors.white60 : Colors.white38, fontSize: 11),
-                    ),
+                    title: Text(pet.name, style: const TextStyle(color: Colors.white, fontSize: 15)),
+                    subtitle: Text("No.${pet.id}", style: TextStyle(color: isSelected ? Colors.white60 : Colors.white38, fontSize: 11)),
                   ),
                 );
               },
@@ -186,7 +181,6 @@ class PetListView extends StatelessWidget {
   }
 }
 
-// --- 详情面板组件（使用 assets/portraits/） ---
 class DetailPanel extends StatelessWidget {
   final Pet pet;
   const DetailPanel({super.key, required this.pet});
@@ -197,9 +191,9 @@ class DetailPanel extends StatelessWidget {
 
     return Container(
       margin: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: const Color(0xFF2D2D2D),
-        borderRadius: const BorderRadius.only(
+      decoration: const BoxDecoration(
+        color: Color(0xFF2D2D2D),
+        borderRadius: BorderRadius.only(
           topLeft: Radius.circular(80), bottomLeft: Radius.circular(80),
           topRight: Radius.circular(35), bottomRight: Radius.circular(35),
         ),
@@ -207,18 +201,17 @@ class DetailPanel extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 30),
-          
           Expanded(
             flex: 3,
             child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 600),
+              tween: Tween(begin: 0.0, end: 1),
+              duration: const Duration(milliseconds: 100),
               builder: (context, value, child) => Opacity(
                 opacity: value,
                 child: Transform.scale(scale: 0.8 + (0.2 * value), child: child),
               ),
               child: Image.asset(
-                'assets/portraits/pet_${pet.id}.png', // 这里改为加载高清立绘路径
+                'assets/portraits/pet_${pet.id}.png',
                 fit: BoxFit.contain,
                 errorBuilder: (context, _, __) => Icon(Icons.catching_pokemon, size: 140, color: accentColor.withOpacity(0.1)),
               ),
@@ -244,10 +237,19 @@ class DetailPanel extends StatelessWidget {
                       children: [
                         Expanded(
                           flex: 4,
-                          // 修复：添加 AspectRatio 避免 Size.infinity 报错
                           child: AspectRatio(
                             aspectRatio: 1,
-                            child: StatRadarChart(stats: pet.stats, color: accentColor),
+                            child: LayoutBuilder(
+                              builder: (context, constraints) {
+                                return Stack(
+                                  clipBehavior: Clip.none,
+                                  children: [
+                                    StatRadarChart(stats: pet.stats, color: accentColor),
+                                    ..._buildCornerIcons(constraints.maxWidth, constraints.maxHeight),
+                                  ],
+                                );
+                              }
+                            ),
                           ),
                         ),
                         const SizedBox(width: 25),
@@ -258,11 +260,11 @@ class DetailPanel extends StatelessWidget {
                             spacing: 20,
                             children: [
                               _buildAnimatedStat("生命", pet.stats[0], accentColor),
-                              _buildAnimatedStat("速度", pet.stats[1], accentColor),
-                              _buildAnimatedStat("物攻", pet.stats[2], accentColor),
-                              _buildAnimatedStat("法攻", pet.stats[3], accentColor),
-                              _buildAnimatedStat("物防", pet.stats[4], accentColor),
-                              _buildAnimatedStat("法防", pet.stats[5], accentColor),
+                              _buildAnimatedStat("物攻", pet.stats[1], accentColor),
+                              _buildAnimatedStat("魔攻", pet.stats[2], accentColor),
+                              _buildAnimatedStat("物防", pet.stats[3], accentColor),
+                              _buildAnimatedStat("魔防", pet.stats[4], accentColor),
+                              _buildAnimatedStat("速度", pet.stats[5], accentColor),
                             ],
                           ),
                         ),
@@ -290,6 +292,59 @@ class DetailPanel extends StatelessWidget {
     );
   }
 
+  // 计算并生成六个角的图标组件
+  List<Widget> _buildCornerIcons(double width, double height) {
+    final List<String> iconNames = ['ui_hp', 'ui_atk', 'ui_matk', 'ui_def', 'ui_mdef', 'ui_speed'];
+    final center = Offset(width / 2, height / 2);
+    final radius = math.min(width, height) / 2 * 0.85;
+    final angleStep = 2 * math.pi / 6;
+    const double iconSize = 24.0;
+
+    return List.generate(6, (index) {
+      final angle = index * angleStep - math.pi / 2;
+      
+      return TweenAnimationBuilder<double>(
+        // 使用延时或者特定的 Curve 让动画更灵动
+        tween: Tween(begin: 0.0, end: 1.0),
+        duration: Duration(milliseconds: 800 + (index * 100)), // 每个图标稍微错开一点时间
+        curve: Curves.elasticOut, // 使用弹性曲线，产生原地弹跳感
+        builder: (context, value, child) {
+          // 固定在顶点位置，不再随 value 从中心点位移
+          final fixedRadius = radius + 22; 
+          final x = center.dx + fixedRadius * math.cos(angle);
+          final y = center.dy + fixedRadius * math.sin(angle);
+          
+          return Positioned(
+            left: x - (iconSize / 2),
+            top: y - (iconSize / 2),
+            // value 同时控制缩放和透明度，实现“原地长出来”的效果
+            child: Opacity(
+              opacity: value.clamp(0.0, 1.0),
+              child: Transform.scale(
+                scale: value, 
+                child: child
+              ),
+            ),
+          );
+        },
+        child: Image.asset(
+          'assets/ui/${iconNames[index]}.png',
+          width: iconSize,
+          height: iconSize,
+          errorBuilder: (c, e, s) => Container(
+            width: iconSize,
+            height: iconSize,
+            decoration: BoxDecoration(
+              color: Colors.white.withOpacity(0.1), 
+              shape: BoxShape.circle
+            ),
+            child: const Icon(Icons.bolt, size: 14, color: Colors.white24),
+          ),
+        ),
+      );
+    });
+  }
+
   Widget _buildAnimatedStat(String label, double value, Color color) {
     return SizedBox(
       width: 145, 
@@ -300,14 +355,14 @@ class DetailPanel extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
-              Text("${(value * 100).toInt()}", style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
+              Text("${value.toInt()}", style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.bold)),
             ],
           ),
           const SizedBox(height: 8),
           ClipRRect(
             borderRadius: BorderRadius.circular(4),
             child: TweenAnimationBuilder<double>(
-              tween: Tween(begin: 0.0, end: value),
+              tween: Tween(begin: 0.0, end: value / 350), 
               duration: const Duration(milliseconds: 800),
               curve: Curves.easeOutCubic,
               builder: (context, animValue, _) => LinearProgressIndicator(
@@ -343,7 +398,6 @@ class DetailPanel extends StatelessWidget {
   }
 }
 
-// --- 雷达图绘制组件 ---
 class StatRadarChart extends StatelessWidget {
   final List<double> stats;
   final Color color;
@@ -352,7 +406,7 @@ class StatRadarChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TweenAnimationBuilder<double>(
-      tween: Tween(begin: 0.0, end: 1.0),
+      tween: Tween(begin: 0.0, end: 1),
       duration: const Duration(milliseconds: 1000),
       curve: Curves.easeOutQuart,
       builder: (context, animationValue, child) => CustomPaint(
@@ -395,7 +449,8 @@ class RadarChartPainter extends CustomPainter {
     final statPath = Path();
     for (int j = 0; j < stats.length; j++) {
       final angle = j * angleStep - math.pi / 2;
-      final currentRadius = radius * stats[j] * animationValue; 
+      // 这里的 350 是雷达图的最大数值映射参考
+      final currentRadius = radius * (stats[j] / 350) * animationValue; 
       final x = center.dx + currentRadius * math.cos(angle);
       final y = center.dy + currentRadius * math.sin(angle);
       if (j == 0) statPath.moveTo(x, y); else statPath.lineTo(x, y);
