@@ -9,7 +9,18 @@ enum PetType {
   water(Color.fromRGBO(109, 150, 201, 1), "水系"),  
   grass(Color.fromARGB(255, 130, 185, 115), "草系"),  
   light(Color.fromARGB(255, 192, 167, 108), "光系"),  
-  dark(Color.fromARGB(255, 148, 114, 173), "暗系");   
+  ordinary(Color.fromARGB(255, 97, 152, 177), "普通"),
+  dragon(Color.fromARGB(255, 228, 43, 43), "龙系"),
+  poison(Color.fromARGB(255, 163, 100, 207), "毒系"),
+  insect(Color.fromARGB(255, 151, 179, 70), "虫系"),
+  valiant(Color.fromARGB(255, 255, 129, 79), "武系"),
+  wing(Color.fromARGB(255, 71, 209, 219), "翼系"),
+  cute(Color.fromARGB(255, 255, 128, 147), "萌系"),
+  evil(Color.fromARGB(255, 233, 64, 120), "恶系"),
+  mechanical(Color.fromRGBO(62, 194, 161, 1), "机械系"),
+  magical(Color.fromARGB(255, 189, 164, 250), "幻系"),
+  electricity(Color.fromARGB(255, 240, 200, 80), "电系"),
+  dark(Color.fromARGB(255, 157, 86, 207), "幽系");   
 
   final Color themeColor;
   final String label;
