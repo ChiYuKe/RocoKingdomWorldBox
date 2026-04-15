@@ -1,17 +1,122 @@
-# RocoKingdomWorldBox
+# 🎮 洛克王国盒子 (Roco Kingdom Toolbox)
 
-A new Flutter project.
+一个针对《洛克王国》的多功能辅助工具，旨在提升游戏体验、整合信息与资源，为玩家提供更便捷的功能支持。
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 📖 项目简介
 
-A few resources to get you started if this is your first Flutter project:
+**洛克王国盒子** 是一个围绕《洛克王国》打造的工具集合项目，包含图鉴、资源管理、数据展示等功能，目标是打造一个轻量、实用的玩家辅助平台。
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+---
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## ✨ 功能特性
+
+* 📚 **图鉴系统**
+
+  * 精灵/宠物信息展示
+  * 图片资源浏览
+  * 属性与分类查看
+
+* 🗂 **资源管理**
+
+  * 游戏纹理/素材整理
+  * 自动分类与索引
+  * 本地资源加载
+
+* 🔍 **数据查询**
+
+  * 快速检索精灵/物品
+  * 条件筛选（属性、稀有度等）
+
+* ⚙️ **扩展能力**
+
+  * 支持后续功能扩展
+  * 可接入自动化脚本或数据源
+
+---
+
+## 🛠 技术栈
+
+* **Flutter**（跨平台 UI）
+* Dart
+* 本地资源管理（Assets）
+* JSON 数据驱动
+
+---
+
+## 📁 项目结构
+
+```bash
+lib/            # 核心代码
+assets/         # 图片与资源文件
+android/        # Android 平台支持
+ios/            # iOS 平台支持
+windows/        # Windows 平台支持
+web/            # Web 支持（可选）
+```
+
+---
+
+## 🚀 快速开始
+
+### 1️⃣ 克隆项目
+
+```bash
+git clone https://github.com/ChiYuKe/RocoKingdomWorldBox.git
+cd roco-kingdom-toolbox
+```
+
+### 2️⃣ 安装依赖
+
+```bash
+flutter pub get
+```
+
+### 3️⃣ 运行项目
+
+```bash
+flutter run
+```
+
+---
+
+## 📦 数据来源说明
+
+本项目中的部分资源来源于《洛克王国》游戏内容，仅用于学习与研究用途。
+
+---
+
+## ⚠️ 免责声明
+
+* 本项目为**非官方工具**，与游戏官方无任何关联
+* 请勿用于商业用途
+* 所有游戏资源版权归原作者/发行方所有
+
+---
+
+## 📌 开发计划（TODO）
+
+* [ ] 完善图鉴数据结构
+* [ ] 自动导入纹理资源
+* [ ] UI 优化
+* [ ] 搜索功能增强
+* [ ] 支持更多游戏数据解析
+
+---
+
+## 🤝 贡献
+
+欢迎提交 Issue 或 PR，一起完善这个项目！
+
+---
+
+## ⭐ 支持项目
+
+如果这个项目对你有帮助，可以点个 ⭐ 支持一下！
+
+---
+
+## 📬 联系
+
+如有问题或建议，欢迎反馈交流。
