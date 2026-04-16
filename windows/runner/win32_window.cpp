@@ -1,4 +1,4 @@
-#include "win32_window.h"
+﻿#include "win32_window.h"
 
 #include <dwmapi.h>
 #include <flutter_windows.h>
@@ -179,6 +179,18 @@ Win32Window::MessageHandler(HWND hwnd,
                             WPARAM const wparam,
                             LPARAM const lparam) noexcept {
   switch (message) {
+    // 限制最小尺寸
+    case WM_GETMINMAXINFO: {
+      auto* info = reinterpret_cast<MINMAXINFO*>(lparam);
+      // 获取当前屏幕的缩放比例（DPI），确保限制的是逻辑像素
+      UINT dpi = GetDpiForWindow(hwnd);
+      double scaling = dpi / 96.0;
+
+      // 设置最小宽度和高度（1280x720 乘以缩放因子）
+      info->ptMinTrackSize.x = static_cast<LONG>(1280 * scaling);
+      info->ptMinTrackSize.y = static_cast<LONG>(720 * scaling);
+      return 0;
+    }
     case WM_DESTROY:
       window_handle_ = nullptr;
       Destroy();
