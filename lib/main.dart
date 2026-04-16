@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(const RocoPokedexApp());
 
+
 // 1. 定义精灵属性类型及对应的颜色主题
 enum PetType {
-  fire(Color.fromARGB(255, 182, 89, 77), "火系"),   
-  water(Color.fromRGBO(109, 150, 201, 1), "水系"),  
-  grass(Color.fromARGB(255, 130, 185, 115), "草系"),  
-  light(Color.fromARGB(255, 192, 167, 108), "光系"),  
+  fire(Color(0xFFBD4A20), "火系"),   
+  water(Color.fromARGB(255, 40, 158, 255), "水系"),  
+  grass(Color.fromARGB(255, 78, 188, 115), "草系"),  
+  light(Color.fromARGB(255, 79, 193, 255), "光系"),  
   ordinary(Color.fromARGB(255, 97, 152, 177), "普通"),
   dragon(Color.fromARGB(255, 228, 43, 43), "龙系"),
   poison(Color.fromARGB(255, 163, 100, 207), "毒系"),
@@ -68,9 +69,14 @@ class _MainScaffoldState extends State<MainScaffold> {
   final List<Pet> _pokedex = [
     Pet(name: "迪莫", id: "001", type: PetType.light, stats: [120, 80, 80, 105, 105, 92]),
     Pet(name: "喵喵", id: "002", type: PetType.grass, stats: [65, 66, 66, 49, 91, 33]),
-    Pet(name: "喵呜", id: "003", type: PetType.grass, stats: [80, 85, 75, 95, 70, 90]),
-    Pet(name: "魔力猫", id: "004", type: PetType.grass, stats: [75, 90, 85, 80, 75, 75]),
-    Pet(name: "火花", id: "005", type: PetType.fire, stats: [70, 75, 60, 90, 65, 95]),
+    Pet(name: "喵呜", id: "003", type: PetType.grass, stats: [86, 87, 87, 65, 121, 44]),
+    Pet(name: "魔力猫", id: "004", type: PetType.grass, stats: [108, 109, 109, 81, 151, 55]),
+    Pet(name: "火花", id: "005", type: PetType.fire, stats: [70, 84, 37, 56, 43, 78]),
+    Pet(name: "焰火", id: "006", type: PetType.fire, stats: [93, 111, 49, 75, 58, 104]),
+    Pet(name: "火神", id: "007", type: PetType.fire, stats: [117, 139, 61, 94, 72, 130]),
+    Pet(name: "水蓝蓝", id: "008", type: PetType.water, stats: [75, 35, 76, 56, 79, 51]),
+    Pet(name: "波波拉", id: "009", type: PetType.water, stats: [100, 46, 102, 75, 106, 68]),
+    
   ];
 
   @override
@@ -129,68 +135,211 @@ class _MainScaffoldState extends State<MainScaffold> {
   }
 }
 
-class PetListView extends StatelessWidget {
+
+
+class PetListView extends StatefulWidget {
   final List<Pet> pokedex;
   final int selectedIndex;
   final ValueChanged<int> onSelected;
 
-  const PetListView({super.key, required this.pokedex, required this.selectedIndex, required this.onSelected});
+  const PetListView({
+    super.key,
+    required this.pokedex,
+    required this.selectedIndex,
+    required this.onSelected,
+  });
+
+  @override
+  State<PetListView> createState() => _PetListViewState();
+}
+
+class _PetListViewState extends State<PetListView> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 280,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+    return SizedBox(
+      width: 240,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 10, bottom: 20),
-            child: Text("精灵图鉴", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: pokedex.length,
-              itemBuilder: (context, index) {
-                bool isSelected = selectedIndex == index;
-                final pet = pokedex[index];
-                
-                return AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  child: ListTile(
-                    onTap: () => onSelected(index),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    tileColor: isSelected ? Colors.black87 : Colors.white.withOpacity(0.15),
-                    leading: Container(
-                      width: 48,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: isSelected ? pet.type.themeColor.withOpacity(0.4) : Colors.white24,
-                        shape: BoxShape.circle,
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/avatars/pet_${pet.id}.png',
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) => 
-                            const Icon(Icons.pets, color: Colors.white30, size: 20),
-                        ),
-                      ),
-                    ),
-                    title: Text(pet.name, style: const TextStyle(color: Colors.white, fontSize: 15)),
-                    subtitle: Text("No.${pet.id}", style: TextStyle(color: isSelected ? Colors.white60 : Colors.white38, fontSize: 11)),
+          // 标题部分保持不变
+          Padding(
+            padding: const EdgeInsets.only(left: 24, top: 40, bottom: 10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "洛克图鉴",
+                  style: TextStyle(
+                    fontSize: 26, 
+                    fontWeight: FontWeight.w900, 
+                    color: Colors.white, 
+                    letterSpacing: 2
                   ),
-                );
+                ),
+                Container(
+                  margin: const EdgeInsets.only(top: 4),
+                  width: 40, height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.white24, 
+                    borderRadius: BorderRadius.circular(2)
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
+          Expanded(
+            // --- 核心优化点：ShaderMask 实现上下边缘渐隐 ---
+            child: ShaderMask(
+              shaderCallback: (Rect rect) {
+                return const LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent, // 顶端完全透明
+                    Colors.black,       // 稍向下一点变为完全不透明
+                    Colors.black,       // 中间大部分区域不透明
+                    Colors.transparent, // 底端完全透明
+                  ],
+                  stops: [0.0, 0.00, 0.95, 1.0], // 控制渐隐的范围，0.05 表示前 5% 区域渐隐
+                ).createShader(rect);
               },
+              blendMode: BlendMode.dstIn, // 关键混合模式，保留目标图形中与遮罩重合的部分
+              child: Scrollbar(
+                controller: _scrollController,
+                child: ListView.builder(
+                  controller: _scrollController,
+                  // 增加垂直方向的内边距，确保第一个和最后一个元素不会直接消失在透明区
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                  itemCount: widget.pokedex.length,
+                  itemBuilder: (context, index) {
+                    final pet = widget.pokedex[index];
+                    final isSelected = widget.selectedIndex == index;
+                    return _buildPetCard(pet, index, isSelected);
+                  },
+                ),
+              ),
             ),
           ),
         ],
       ),
     );
   }
+
+  Widget _buildPetCard(Pet pet, int index, bool isSelected) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeOutCubic,
+      margin: const EdgeInsets.only(bottom: 12),
+      child: InkWell(
+        onTap: () => widget.onSelected(index),
+        borderRadius: BorderRadius.circular(20),
+        child: Stack(
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: isSelected 
+                    ? Colors.black.withOpacity(0.5) 
+                    : const Color.fromARGB(1, 83, 81, 81).withOpacity(0.3),
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: isSelected ? [
+                  BoxShadow(
+                    color: pet.type.themeColor.withOpacity(0.2), 
+                    blurRadius: 15, 
+                    spreadRadius: 1
+                  )
+                ] : [],
+              ),
+              child: Row(
+                children: [
+                  Container(
+                    width: 56, height: 56,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: RadialGradient(
+                        colors: [
+                          isSelected ? pet.type.themeColor.withOpacity(0.4) : Colors.white10,
+                          Colors.transparent,
+                        ],
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        'assets/avatars/pet_${pet.id}.png',
+                        fit: BoxFit.contain,
+                        cacheWidth: 120,
+                        errorBuilder: (context, error, stackTrace) => Icon(
+                          Icons.pets,
+                          color: isSelected ? Colors.white : Colors.white24,
+                          size: 28,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          pet.name,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 17,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: pet.type.themeColor.withOpacity(0.5),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            pet.type.label,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Positioned(
+              top: 12, right: 16,
+              child: Text(
+                "#${pet.id}",
+                style: TextStyle(
+                  color: isSelected ? pet.type.themeColor.withOpacity(0.8) : const Color.fromARGB(228, 255, 255, 255),
+                  fontSize: 11,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
+
+
 
 class DetailPanel extends StatelessWidget {
   final Pet pet;
@@ -216,7 +365,7 @@ class DetailPanel extends StatelessWidget {
             flex: 3,
             child: TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1),
-              duration: const Duration(milliseconds: 100),
+              duration: const Duration(milliseconds: 300),
               builder: (context, value, child) => Opacity(
                 opacity: value,
                 child: Transform.scale(scale: 0.8 + (0.2 * value), child: child),
