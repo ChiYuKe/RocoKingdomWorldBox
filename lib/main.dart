@@ -75,15 +75,13 @@ class _MainScaffoldState extends State<MainScaffold> {
   }
 
 Widget _buildMainContent() {
-  // 核心逻辑：计算当前真正的强调色
-  // 如果锁定了色系，强调色应使用手动选中的色系；否则跟随当前宠物系别
   final Color currentEffectiveColor = _isColorLocked 
       ? _selectedType.themeColor 
       : _pokedex[_selectedIndex].type.themeColor;
 
   if (_currentTab == 2) {
     return SettingsTab(
-      accentColor: currentEffectiveColor, // 这里传递计算后的最终颜色
+      accentColor: currentEffectiveColor, 
       isColorLocked: _isColorLocked,
       selectedType: _selectedType,
       onLockChanged: (v) => setState(() => _isColorLocked = v),
@@ -91,7 +89,6 @@ Widget _buildMainContent() {
     );
   }
   
-  // 宠物图鉴页也建议同步使用这个 currentEffectiveColor 以保持视觉统一
   return PokedexTab(
     pokedex: _pokedex,
     selectedIndex: _selectedIndex,
