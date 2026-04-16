@@ -249,7 +249,7 @@ class _PetListViewState extends State<PetListView> {
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
                 color: isSelected 
-                    ? Colors.black.withOpacity(0.5) 
+                    ? Colors.black.withOpacity(0.8) 
                     : const Color.fromARGB(1, 83, 81, 81).withOpacity(0.3),
                 borderRadius: BorderRadius.circular(20),
                 boxShadow: isSelected ? [
