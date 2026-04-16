@@ -4,7 +4,21 @@ import '../models/pet.dart';
 
 class SettingsTab extends StatefulWidget {
   final Color accentColor;
-  const SettingsTab({super.key, required this.accentColor});
+  
+  //接收父组件的状态
+  final bool isColorLocked;
+  final PetType selectedType;
+  final ValueChanged<bool> onLockChanged;
+  final ValueChanged<PetType> onTypeChanged;
+
+  const SettingsTab({
+    super.key, 
+    required this.accentColor,
+    required this.isColorLocked,
+    required this.selectedType,
+    required this.onLockChanged,
+    required this.onTypeChanged,
+  });
 
   @override
   State<SettingsTab> createState() => _SettingsTabState();
@@ -13,11 +27,9 @@ class SettingsTab extends StatefulWidget {
 class _SettingsTabState extends State<SettingsTab> {
   int _activeCategory = 0;
   
-  // 常规设置状态
+  // 常规设置状态（本地私有状态，不影响背景色的可保留在此）
   bool _hdPortrait = true;
   double _uiScale = 1.0;
-  bool _isColorLocked = false; // 是否锁定色系
-  PetType _selectedType = PetType.light; // 默认自选系别
 
   // 音效设置状态
   bool _masterSound = true;
@@ -33,7 +45,6 @@ class _SettingsTabState extends State<SettingsTab> {
       ),
       child: Row(
         children: [
-          // 左侧导航
           Container(
             width: 200,
             padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
@@ -52,7 +63,6 @@ class _SettingsTabState extends State<SettingsTab> {
               ],
             ),
           ),
-          // 右侧内容
           Expanded(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 300),
@@ -95,11 +105,11 @@ class _SettingsTabState extends State<SettingsTab> {
     }
   }
 
-  // --- 1. 常规设置面板 ---
+  //常规设置面板
   Widget _buildGeneralSettings() => Padding(
     key: const ValueKey(0),
     padding: const EdgeInsets.all(40),
-    child: SingleChildScrollView( // 防止内容过多溢出
+    child: SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -111,19 +121,19 @@ class _SettingsTabState extends State<SettingsTab> {
           const Divider(color: Colors.white10, height: 60),
           
           _buildSectionHeader("个性化配色"),
+          // 使用父组件传进来的 widget.isColorLocked 和 widget.onLockChanged
           _buildSwitchTile(
             "锁定当前色系", 
             "锁定后背景颜色将不再随精灵选中而变化", 
-            _isColorLocked, 
-            (v) => setState(() => _isColorLocked = v)
+            widget.isColorLocked, 
+            widget.onLockChanged
           ),
           const SizedBox(height: 24),
           
-          // 自选精灵色系控件
           Opacity(
-            opacity: _isColorLocked ? 1.0 : 0.4, // 未锁定时变暗
+            opacity: widget.isColorLocked ? 1.0 : 0.4,
             child: IgnorePointer(
-              ignoring: !_isColorLocked, // 未锁定时不可交互
+              ignoring: !widget.isColorLocked,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -142,7 +152,7 @@ class _SettingsTabState extends State<SettingsTab> {
                       border: Border.all(color: Colors.white10),
                     ),
                     child: DropdownButton<PetType>(
-                      value: _selectedType,
+                      value: widget.selectedType, // 使用父组件传进来的值
                       dropdownColor: const Color(0xFF2D2D2D),
                       underline: const SizedBox(),
                       icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
@@ -162,7 +172,7 @@ class _SettingsTabState extends State<SettingsTab> {
                         );
                       }).toList(),
                       onChanged: (PetType? newValue) {
-                        if (newValue != null) setState(() => _selectedType = newValue);
+                        if (newValue != null) widget.onTypeChanged(newValue);
                       },
                     ),
                   ),
@@ -175,7 +185,7 @@ class _SettingsTabState extends State<SettingsTab> {
     ),
   );
 
-  // --- 2. 音效设置面板 ---
+
   Widget _buildAudioSettings() => Padding(
     key: const ValueKey(1),
     padding: const EdgeInsets.all(40),
@@ -183,14 +193,13 @@ class _SettingsTabState extends State<SettingsTab> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _buildSectionHeader("音频管理"),
-        _buildSwitchTile("主音量开关", "到时候做个做个音乐播放器，岂不是妙哉！", _masterSound, (v) => setState(() => _masterSound = v)),
+        _buildSwitchTile("主音量开关", "到时候做个音乐播放器，岂不是妙哉！", _masterSound, (v) => setState(() => _masterSound = v)),
         const Divider(color: Colors.white10, height: 40),
         _buildSliderTile("背景音乐 (BGM)", _bgmVolume, 0, 1, (v) => setState(() => _bgmVolume = v)),
       ],
     ),
   );
 
-  // --- 3. 关于面板 ---
   Widget _buildAboutPanel() => Padding(
     key: const ValueKey(2),
     padding: const EdgeInsets.all(40),
@@ -207,7 +216,7 @@ class _SettingsTabState extends State<SettingsTab> {
         const Text("Version 0.0.0 (beta version)", style: TextStyle(color: Colors.white38, fontSize: 14)),
         const SizedBox(height: 30),
         const Text(
-          "ChiYuKe的个人UI练习,公司上班摸鱼写这个练手难道自己不会被Dart的缩进干红温吗？", 
+          "ChiYuKe的个人UI练习", 
           textAlign: TextAlign.center, 
           style: TextStyle(color: Colors.white70, fontSize: 15, height: 1.5)
         ),
@@ -217,7 +226,6 @@ class _SettingsTabState extends State<SettingsTab> {
     ),
   );
 
-  // --- 通用组件构建函数 ---
   Widget _buildSectionHeader(String title) => Padding(
     padding: const EdgeInsets.only(bottom: 20),
     child: Text(title, style: TextStyle(color: widget.accentColor, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.2)),
