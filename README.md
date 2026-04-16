@@ -12,6 +12,8 @@
 ## 📷 UI 预览
 
 ![UI预览](./docs/preview.png)
+![UI预览](./docs/preview2.png)
+![UI预览](./docs/preview3.png)
 
 
 
