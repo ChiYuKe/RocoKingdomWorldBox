@@ -3,6 +3,11 @@
 一个针对《洛克王国》的多功能辅助工具，旨在提升游戏体验、整合信息与资源，为玩家提供更便捷的功能支持。
 
 ---
+## 🚧 项目状态
+
+当前处于开发阶段（WIP - Work In Progress）
+
+
 
 ## 📷 UI 预览
 
@@ -72,7 +77,7 @@ web/            # Web 支持（可选）
 
 ```bash
 git clone https://github.com/ChiYuKe/RocoKingdomWorldBox.git
-cd roco-kingdom-toolbox
+cd RocoKingdomWorldBox
 ```
 
 ### 2️⃣ 安装依赖
@@ -91,7 +96,7 @@ flutter run
 
 ## 📦 数据来源说明
 
-本项目中的部分资源来源于《洛克王国》游戏内容，仅用于学习与研究用途。
+本项目中的部分资源来源于《洛克王国:世界》游戏内容，仅用于学习与研究用途。
 
 ---
 
