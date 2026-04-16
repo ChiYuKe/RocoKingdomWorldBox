@@ -8,7 +8,11 @@ void main() => runApp(const RocoPokedexApp());
 class RocoPokedexApp extends StatelessWidget {
   const RocoPokedexApp({super.key});
   @override
-  Widget build(BuildContext context) => MaterialApp(debugShowCheckedModeBanner: false, theme: ThemeData(useMaterial3: true, fontFamily: 'MIANFEIZITI'), home: const MainScaffold());
+  Widget build(BuildContext context) => MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(useMaterial3: true, fontFamily: 'MIANFEIZITI'),
+        home: const MainScaffold(),
+      );
 }
 
 class MainScaffold extends StatefulWidget {
@@ -20,6 +24,9 @@ class MainScaffold extends StatefulWidget {
 class _MainScaffoldState extends State<MainScaffold> {
   int _currentTab = 0;
   int _selectedIndex = 0;
+
+  bool _isColorLocked = false; 
+  PetType _selectedType = PetType.light; 
 
   final List<Pet> _pokedex = [
     Pet(name: "迪莫", id: "001", type: PetType.light, stats: [120, 80, 80, 105, 105, 92], evolutions: []),
@@ -37,35 +44,60 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   @override
   Widget build(BuildContext context) {
-    final Color currentTheme = _pokedex[_selectedIndex].type.themeColor;
+    // 如果锁定则使用自选色，否则跟随宠物 
+    final Color currentTheme = _isColorLocked 
+        ? _selectedType.themeColor 
+        : _pokedex[_selectedIndex].type.themeColor;
+
     return Scaffold(
-      backgroundColor: currentTheme,
-      body: Row(
-        children: [
-          _buildNavigationRail(), 
-          Expanded(
-            child: Container(
-              margin: const EdgeInsets.fromLTRB(0, 20, 20, 20),
-              decoration: BoxDecoration(color: Colors.white.withOpacity(0.2), borderRadius: BorderRadius.circular(40), border: Border.all(color: Colors.white.withOpacity(0.3))),
-              child: _buildMainContent(),
+      // 使用 AnimatedContainer 让色系切换时有平滑过渡效果
+      body: AnimatedContainer(
+        duration: const Duration(milliseconds: 500),
+        color: currentTheme,
+        child: Row(
+          children: [
+            _buildNavigationRail(), 
+            Expanded(
+              child: Container(
+                margin: const EdgeInsets.fromLTRB(0, 20, 20, 20),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2), 
+                  borderRadius: BorderRadius.circular(40), 
+                  border: Border.all(color: Colors.white.withOpacity(0.3))
+                ),
+                child: _buildMainContent(),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildMainContent() {
-    if (_currentTab == 2) {
-      return SettingsTab(accentColor: _pokedex[_selectedIndex].type.themeColor);
-    }
-    // 默认展示图鉴页
-    return PokedexTab(
-      pokedex: _pokedex,
-      selectedIndex: _selectedIndex,
-      onSelected: (index) => setState(() => _selectedIndex = index),
+Widget _buildMainContent() {
+  // 核心逻辑：计算当前真正的强调色
+  // 如果锁定了色系，强调色应使用手动选中的色系；否则跟随当前宠物系别
+  final Color currentEffectiveColor = _isColorLocked 
+      ? _selectedType.themeColor 
+      : _pokedex[_selectedIndex].type.themeColor;
+
+  if (_currentTab == 2) {
+    return SettingsTab(
+      accentColor: currentEffectiveColor, // 这里传递计算后的最终颜色
+      isColorLocked: _isColorLocked,
+      selectedType: _selectedType,
+      onLockChanged: (v) => setState(() => _isColorLocked = v),
+      onTypeChanged: (t) => setState(() => _selectedType = t),
     );
   }
+  
+  // 宠物图鉴页也建议同步使用这个 currentEffectiveColor 以保持视觉统一
+  return PokedexTab(
+    pokedex: _pokedex,
+    selectedIndex: _selectedIndex,
+    onSelected: (index) => setState(() => _selectedIndex = index),
+  );
+}
 
   Widget _buildNavigationRail() {
     return Container(
@@ -74,7 +106,20 @@ class _MainScaffoldState extends State<MainScaffold> {
         children: [
           const Icon(Icons.catching_pokemon, color: Colors.white, size: 32),
           const Spacer(),
-          Container(padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8), decoration: BoxDecoration(color: Colors.black.withOpacity(0.2), borderRadius: BorderRadius.circular(40), border: Border.all(color: Colors.white.withOpacity(0.1))), child: Column(mainAxisSize: MainAxisSize.min, children: [_buildNavBtn(0, Icons.auto_awesome_motion_rounded), const SizedBox(height: 20), _buildNavBtn(1, Icons.compare_arrows_rounded), const SizedBox(height: 20), _buildNavBtn(2, Icons.settings_rounded)])),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8), 
+            decoration: BoxDecoration(color: Colors.black.withOpacity(0.2), borderRadius: BorderRadius.circular(40), border: Border.all(color: Colors.white.withOpacity(0.1))), 
+            child: Column(
+              mainAxisSize: MainAxisSize.min, 
+              children: [
+                _buildNavBtn(0, Icons.auto_awesome_motion_rounded), 
+                const SizedBox(height: 20), 
+                _buildNavBtn(1, Icons.compare_arrows_rounded), 
+                const SizedBox(height: 20), 
+                _buildNavBtn(2, Icons.settings_rounded)
+              ]
+            )
+          ),
           const Spacer(),
         ],
       ),
@@ -85,7 +130,13 @@ class _MainScaffoldState extends State<MainScaffold> {
     final bool isSelected = _currentTab == index;
     return GestureDetector(
       onTap: () => setState(() => _currentTab = index),
-      child: AnimatedContainer(duration: const Duration(milliseconds: 400), curve: Curves.easeOutBack, width: 50, height: 50, decoration: BoxDecoration(color: isSelected ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(25)), child: Icon(icon, size: 26, color: isSelected ? Colors.black87 : Colors.white.withOpacity(0.5))),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 400), 
+        curve: Curves.easeOutBack, 
+        width: 50, height: 50, 
+        decoration: BoxDecoration(color: isSelected ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(25)), 
+        child: Icon(icon, size: 26, color: isSelected ? Colors.black87 : Colors.white.withOpacity(0.5))
+      ),
     );
   }
 }
