@@ -2,6 +2,14 @@ import 'package:flutter/material.dart';
 import 'models/pet.dart';
 import 'tabs/pokedex_tab.dart';
 import 'tabs/settings_tab.dart';
+import 'tabs/comparison_tab.dart';
+import 'tabs/plugins_tab.dart';
+import 'models/plugin_interface.dart';
+
+
+import 'plugins/calc_plugin/main.dart' as calc;// 导入插件实现文件
+
+
 
 void main() => runApp(const RocoPokedexApp());
 
@@ -22,11 +30,17 @@ class MainScaffold extends StatefulWidget {
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
+  List<RocoPlugin> _plugins = [];
   int _currentTab = 0;
   int _selectedIndex = 0;
 
+  // 是否锁定颜色逻辑
   bool _isColorLocked = false; 
-  PetType _selectedType = PetType.light; 
+  PetType _selectedType = PetType.light;
+  
+  double _colorIntensity = 0.8;
+
+
 
   final List<Pet> _pokedex = [
     Pet(name: "迪莫", id: "001", type: PetType.light, stats: [120, 80, 80, 105, 105, 92], evolutions: []),
@@ -42,78 +56,63 @@ class _MainScaffoldState extends State<MainScaffold> {
     Pet(name: "奇丽草", id: "041", type: PetType.grass, stats: [67, 69, 69, 73, 57, 48], evolutions: ["041", "042", "043"]),
   ];
 
+  // 2. 使用 initState 进行初始化
+  @override
+  void initState() {
+    super.initState();
+    // 在这里初始化插件，此时 _pokedex 已经可以使用
+    _plugins = [
+      calc.CalcPlugin(pokedex: _pokedex),
+    ];
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
-    // 如果锁定则使用自选色，否则跟随宠物 
-    final Color currentTheme = _isColorLocked 
+    final Color currentEffectiveColor = _isColorLocked 
         ? _selectedType.themeColor 
         : _pokedex[_selectedIndex].type.themeColor;
 
     return Scaffold(
-      // 使用 AnimatedContainer 让色系切换时有平滑过渡效果
-      body: AnimatedContainer(
-        duration: const Duration(milliseconds: 500),
-        color: currentTheme,
-        child: Row(
-          children: [
-            _buildNavigationRail(), 
-            Expanded(
-              child: Container(
-                margin: const EdgeInsets.fromLTRB(0, 20, 20, 20),
-                decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.2), 
-                  borderRadius: BorderRadius.circular(40), 
-                  border: Border.all(color: Colors.white.withOpacity(0.3))
-                ),
-                child: _buildMainContent(),
-              ),
-            ),
-          ],
-        ),
+      // 使用变量控制背景色的混合深度
+      backgroundColor: Color.lerp(const Color.fromARGB(255, 0, 0, 0), currentEffectiveColor, _colorIntensity), 
+      body: Row(
+        children: [
+          _buildNavigationRail(currentEffectiveColor), 
+          Expanded(child: _buildMainContent(currentEffectiveColor)),
+        ],
       ),
     );
   }
 
-Widget _buildMainContent() {
-  final Color currentEffectiveColor = _isColorLocked 
-      ? _selectedType.themeColor 
-      : _pokedex[_selectedIndex].type.themeColor;
-
-  if (_currentTab == 2) {
-    return SettingsTab(
-      accentColor: currentEffectiveColor, 
-      isColorLocked: _isColorLocked,
-      selectedType: _selectedType,
-      onLockChanged: (v) => setState(() => _isColorLocked = v),
-      onTypeChanged: (t) => setState(() => _selectedType = t),
-    );
-  }
-  
-  return PokedexTab(
-    pokedex: _pokedex,
-    selectedIndex: _selectedIndex,
-    onSelected: (index) => setState(() => _selectedIndex = index),
-  );
-}
-
-  Widget _buildNavigationRail() {
+  // 侧边栏方法
+  Widget _buildNavigationRail(Color accentColor) {
     return Container(
-      width: 88, padding: const EdgeInsets.symmetric(vertical: 30),
+      width: 80,
+      padding: const EdgeInsets.symmetric(vertical: 30),
+      color: Color.lerp(const Color(0xFF252525), accentColor, _colorIntensity * 0.1), // 黑色恩和精灵色系做个混合不然有点刺眼
       child: Column(
         children: [
-          const Icon(Icons.catching_pokemon, color: Colors.white, size: 32),
+          Icon(Icons.catching_pokemon, color: accentColor, size: 32),
           const Spacer(),
           Container(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8), 
-            decoration: BoxDecoration(color: Colors.black.withOpacity(0.2), borderRadius: BorderRadius.circular(40), border: Border.all(color: Colors.white.withOpacity(0.1))), 
+            decoration: BoxDecoration(
+              color: Colors.black.withOpacity(0.2), 
+              borderRadius: BorderRadius.circular(20), 
+              border: Border.all(color: Colors.white.withOpacity(0.1))
+            ), 
             child: Column(
               mainAxisSize: MainAxisSize.min, 
               children: [
-                _buildNavBtn(0, Icons.auto_awesome_motion_rounded), 
-                const SizedBox(height: 20), 
-                _buildNavBtn(1, Icons.compare_arrows_rounded), 
-                const SizedBox(height: 20), 
-                _buildNavBtn(2, Icons.settings_rounded)
+                _buildNavBtn(0, Icons.auto_awesome_motion_rounded, "图鉴", accentColor), 
+                const SizedBox(height: 16), 
+                _buildNavBtn(1, Icons.compare_arrows_rounded, "克制", accentColor), 
+                const SizedBox(height: 16), 
+                _buildNavBtn(2, Icons.extension_rounded, "插件", accentColor), 
+                const SizedBox(height: 16), 
+                _buildNavBtn(3, Icons.settings_rounded, "设置", accentColor)
               ]
             )
           ),
@@ -123,17 +122,75 @@ Widget _buildMainContent() {
     );
   }
 
-  Widget _buildNavBtn(int index, IconData icon) {
+  // 导航按钮构建方法，包含动画效果和选中状态的视觉反馈
+  Widget _buildNavBtn(int index, IconData icon, String label, Color accentColor) {
     final bool isSelected = _currentTab == index;
     return GestureDetector(
       onTap: () => setState(() => _currentTab = index),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 400), 
         curve: Curves.easeOutBack, 
-        width: 50, height: 50, 
-        decoration: BoxDecoration(color: isSelected ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(25)), 
-        child: Icon(icon, size: 26, color: isSelected ? Colors.black87 : Colors.white.withOpacity(0.5))
+        width: 60, 
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected ? accentColor : Colors.transparent, 
+          borderRadius: BorderRadius.circular(16)
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon, 
+              color: isSelected ? Colors.white : Colors.white38, 
+              size: 24
+            ),
+            const SizedBox(height: 4),
+            Text(
+              label,
+              style: TextStyle(
+                color: isSelected ? Colors.white : Colors.white38,
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
+
+
+  // 主内容区域切换逻辑
+  Widget _buildMainContent(Color accentColor) {
+    switch (_currentTab) {
+        case 0:
+          return PokedexTab(
+            pokedex: _pokedex,
+            selectedIndex: _selectedIndex,
+            onSelected: (index) => setState(() => _selectedIndex = index),
+            accentColor: accentColor,
+          );
+        case 1:
+          // 新增对比页面
+          return ComparisonTab(
+            pokedex: _pokedex,
+            accentColor: accentColor,
+          );
+        case 2:
+          return PluginsTab(plugins: _plugins, accentColor: accentColor);
+        case 3:
+          return SettingsTab(
+            accentColor: accentColor,
+            isColorLocked: _isColorLocked,
+            selectedType: _selectedType,
+            colorIntensity: _colorIntensity,
+            onLockChanged: (v) => setState(() => _isColorLocked = v),
+            onTypeChanged: (t) => setState(() => _selectedType = t),
+            onIntensityChanged: (v) => setState(() => _colorIntensity = v),
+          );
+        default:
+          return const SizedBox.shrink();
+      }
+  }
+
 }
