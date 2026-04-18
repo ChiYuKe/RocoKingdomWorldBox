@@ -8,16 +8,20 @@ class SettingsTab extends StatefulWidget {
   //接收父组件的状态
   final bool isColorLocked;
   final PetType selectedType;
+  final double colorIntensity;
   final ValueChanged<bool> onLockChanged;
   final ValueChanged<PetType> onTypeChanged;
+  final ValueChanged<double> onIntensityChanged;
 
   const SettingsTab({
     super.key, 
     required this.accentColor,
     required this.isColorLocked,
     required this.selectedType,
+    required this.colorIntensity,
     required this.onLockChanged,
     required this.onTypeChanged,
+    required this.onIntensityChanged,
   });
 
   @override
@@ -129,7 +133,6 @@ class _SettingsTabState extends State<SettingsTab> {
             widget.onLockChanged
           ),
           const SizedBox(height: 24),
-          
           Opacity(
             opacity: widget.isColorLocked ? 1.0 : 0.4,
             child: IgnorePointer(
@@ -180,6 +183,14 @@ class _SettingsTabState extends State<SettingsTab> {
               ),
             ),
           ),
+          const SizedBox(height: 24),
+          _buildSliderTile(
+              "背景色彩强度", 
+              widget.colorIntensity, 
+              0.0, 1, 
+              widget.onIntensityChanged
+            ),
+
         ],
       ),
     ),
