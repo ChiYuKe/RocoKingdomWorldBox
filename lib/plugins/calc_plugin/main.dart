@@ -15,9 +15,9 @@ class CalcPlugin implements RocoPlugin {
   @override
   String get description => "对比两只精灵的属性，帮助你更好地了解它们的优劣势";
   @override
-  String get version => "V 2.1.0";
+  String get version => "V 1.0.0";
   @override
-  String get author => "RocoCoder";
+  String get author => "ChiYuKe";
 
   @override
   Widget buildIcon(BuildContext context, Color accentColor) {
