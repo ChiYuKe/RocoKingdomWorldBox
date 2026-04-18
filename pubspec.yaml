@@ -1,4 +1,4 @@
-name: flutter_application_1
+name: rocokingdomworldbox
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -36,6 +36,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
 
   cupertino_icons: ^1.0.8
+  shared_preferences: ^2.2.0
+  isar: ^3.1.0
+  isar_flutter_libs: ^3.1.0 # 包含各平台所需的二进制库
+  path_provider: ^2.1.0    # 用于获取数据库存放路径
+
 
  #  window_manager: ^0.4.3
 
@@ -48,6 +53,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  isar_generator: ^3.1.0
+  build_runner: any
+
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -74,6 +83,7 @@ flutter:
     - assets/portraits/
     - assets/ui/
     - assets/ui/types/
+    - assets/data/pokedex.json
 
 
 
@@ -128,5 +138,3 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package  
-  # 这里是新添加的 
-  
