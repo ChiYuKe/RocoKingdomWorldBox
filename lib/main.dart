@@ -1,82 +1,127 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
 import 'models/pet.dart';
 import 'tabs/pokedex_tab.dart';
 import 'tabs/settings_tab.dart';
 import 'tabs/comparison_tab.dart';
 import 'tabs/plugins_tab.dart';
 import 'models/plugin_interface.dart';
-
-
-import 'plugins/calc_plugin/main.dart' as calc;// 导入插件实现文件
-
-
+import 'plugins/calc_plugin/main.dart' as calc;
+import 'plugins/update_pet_data_plugin/main.dart' as update_pet_data;
 
 void main() => runApp(const RocoPokedexApp());
 
 class RocoPokedexApp extends StatelessWidget {
   const RocoPokedexApp({super.key});
+
   @override
-  Widget build(BuildContext context) => MaterialApp(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(useMaterial3: true, fontFamily: 'MIANFEIZITI'),
-        home: const MainScaffold(),
-      );
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        useMaterial3: true, 
+        fontFamily: 'MIANFEIZITI',
+      ),
+      home: const MainScaffold(),
+    );
+  }
 }
 
 class MainScaffold extends StatefulWidget {
   const MainScaffold({super.key});
+
   @override
   State<MainScaffold> createState() => _MainScaffoldState();
 }
 
 class _MainScaffoldState extends State<MainScaffold> {
+  // 数据库相关变量
+  late Isar _isar;
+  List<Pet> _pokedex = [];
   List<RocoPlugin> _plugins = [];
+  bool _isLoading = true;
+
+  // UI 状态变量
   int _currentTab = 0;
   int _selectedIndex = 0;
-
-  // 是否锁定颜色逻辑
   bool _isColorLocked = false; 
   PetType _selectedType = PetType.light;
-  
   double _colorIntensity = 0.8;
 
-
-
-  final List<Pet> _pokedex = [
-    Pet(name: "迪莫", id: "001", type: PetType.light, stats: [120, 80, 80, 105, 105, 92], evolutions: []),
-    Pet(name: "喵喵", id: "002", type: PetType.grass, stats: [65, 66, 66, 49, 91, 33], evolutions: ["002","003", "004"]),
-    Pet(name: "喵呜", id: "003", type: PetType.grass, stats: [86, 87, 87, 65, 121, 44], evolutions: ["002","003", "004"]),
-    Pet(name: "魔力猫", id: "004", type: PetType.grass, stats: [108, 109, 109, 81, 151, 55], evolutions: ["002","003", "004"]),
-    Pet(name: "火花", id: "005", type: PetType.fire, stats: [70, 84, 37, 56, 43, 78], evolutions: ["005", "006", "007"]),
-    Pet(name: "焰火", id: "006", type: PetType.fire, stats: [93, 111, 49, 75, 58, 104], evolutions: ["005", "006", "007"]),
-    Pet(name: "火神", id: "007", type: PetType.fire, stats: [117, 139, 61, 94, 72, 130], evolutions: ["005", "006", "007"]),
-    Pet(name: "水蓝蓝", id: "008", type: PetType.water, stats: [75, 35, 76, 56, 79, 51], evolutions: ["008", "009", "010","10"]),
-    Pet(name: "波波拉", id: "009", type: PetType.water, stats: [100, 46, 102, 75, 106, 68], evolutions: ["008", "009", "010"]),
-    Pet(name: "乖乖鹄", id: "088", type: PetType.water, stats: [75, 57, 52, 83, 58, 69], evolutions: ["088", "089", "090", "091"]),
-    Pet(name: "奇丽草", id: "041", type: PetType.grass, stats: [67, 69, 69, 73, 57, 48], evolutions: ["041", "042", "043"]),
-  ];
-
-  // 2. 使用 initState 进行初始化
   @override
   void initState() {
     super.initState();
-    // 在这里初始化插件，此时 _pokedex 已经可以使用
-    _plugins = [
-      calc.CalcPlugin(pokedex: _pokedex),
-    ];
+    _initApp();
   }
 
+  /// 初始化数据库与数据
+  Future<void> _initApp() async {
 
+    final dir = await getApplicationDocumentsDirectory();
+    _isar = await Isar.open([PetSchema], directory: dir.path);
+
+    // 加载资源文件中的 JSON
+    final String jsonString = await rootBundle.loadString('assets/data/pokedex.json');
+    final Map<String, dynamic> jsonMap = json.decode(jsonString);
+    final int jsonVersion = jsonMap['version'];
+
+    // 检查本地版本号
+    final prefs = await SharedPreferences.getInstance();
+    final int localVersion = prefs.getInt('pokedex_version') ?? 0;
+
+    // 如果 JSON 版本更高，则更新数据库  jsonVersion > localVersion
+    if (true) {
+      final List<dynamic> data = jsonMap['data'];
+      final List<Pet> newPets = data.map((item) => Pet.fromJson(item)).toList();
+
+      await _isar.writeTxn(() async {
+        // 由于设置了 @Index(unique: true, replace: true)，相同 ID 的精灵会被自动覆盖
+        await _isar.pets.putAll(newPets); 
+      });
+
+      // 更新本地版本记录
+      await prefs.setInt('pokedex_version', jsonVersion);
+    }
+
+    // 从数据库读取最终展示数据
+    final allPets = await _isar.pets.where().findAll();
+
+    setState(() {
+      _pokedex = allPets;
+      _plugins = [calc.CalcPlugin(pokedex: _pokedex), update_pet_data.CalcPlugin()];
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // 数据加载中显示加载动画，防止空数据索引崩溃
+    if (_isLoading) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+      );
+    }
+
     final Color currentEffectiveColor = _isColorLocked 
         ? _selectedType.themeColor 
         : _pokedex[_selectedIndex].type.themeColor;
 
     return Scaffold(
-      // 使用变量控制背景色的混合深度
-      backgroundColor: Color.lerp(const Color.fromARGB(255, 0, 0, 0), currentEffectiveColor, _colorIntensity), 
+      backgroundColor: Color.lerp(
+        const Color.fromARGB(255, 0, 0, 0), 
+        currentEffectiveColor, 
+        _colorIntensity
+      ), 
       body: Row(
         children: [
           _buildNavigationRail(currentEffectiveColor), 
@@ -86,12 +131,11 @@ class _MainScaffoldState extends State<MainScaffold> {
     );
   }
 
-  // 侧边栏方法
   Widget _buildNavigationRail(Color accentColor) {
     return Container(
       width: 80,
       padding: const EdgeInsets.symmetric(vertical: 30),
-      color: Color.lerp(const Color(0xFF252525), accentColor, _colorIntensity * 0.1), // 黑色恩和精灵色系做个混合不然有点刺眼
+      color: Color.lerp(const Color(0xFF252525), accentColor, _colorIntensity * 0.1),
       child: Column(
         children: [
           Icon(Icons.catching_pokemon, color: accentColor, size: 32),
@@ -122,7 +166,6 @@ class _MainScaffoldState extends State<MainScaffold> {
     );
   }
 
-  // 导航按钮构建方法，包含动画效果和选中状态的视觉反馈
   Widget _buildNavBtn(int index, IconData icon, String label, Color accentColor) {
     final bool isSelected = _currentTab == index;
     return GestureDetector(
@@ -159,38 +202,34 @@ class _MainScaffoldState extends State<MainScaffold> {
     );
   }
 
-
-  // 主内容区域切换逻辑
   Widget _buildMainContent(Color accentColor) {
     switch (_currentTab) {
-        case 0:
-          return PokedexTab(
-            pokedex: _pokedex,
-            selectedIndex: _selectedIndex,
-            onSelected: (index) => setState(() => _selectedIndex = index),
-            accentColor: accentColor,
-          );
-        case 1:
-          // 新增对比页面
-          return ComparisonTab(
-            pokedex: _pokedex,
-            accentColor: accentColor,
-          );
-        case 2:
-          return PluginsTab(plugins: _plugins, accentColor: accentColor);
-        case 3:
-          return SettingsTab(
-            accentColor: accentColor,
-            isColorLocked: _isColorLocked,
-            selectedType: _selectedType,
-            colorIntensity: _colorIntensity,
-            onLockChanged: (v) => setState(() => _isColorLocked = v),
-            onTypeChanged: (t) => setState(() => _selectedType = t),
-            onIntensityChanged: (v) => setState(() => _colorIntensity = v),
-          );
-        default:
-          return const SizedBox.shrink();
-      }
+      case 0:
+        return PokedexTab(
+          pokedex: _pokedex,
+          selectedIndex: _selectedIndex,
+          onSelected: (index) => setState(() => _selectedIndex = index),
+          accentColor: accentColor,
+        );
+      case 1:
+        return ComparisonTab(
+          pokedex: _pokedex,
+          accentColor: accentColor,
+        );
+      case 2:
+        return PluginsTab(plugins: _plugins, accentColor: accentColor);
+      case 3:
+        return SettingsTab(
+          accentColor: accentColor,
+          isColorLocked: _isColorLocked,
+          selectedType: _selectedType,
+          colorIntensity: _colorIntensity,
+          onLockChanged: (v) => setState(() => _isColorLocked = v),
+          onTypeChanged: (t) => setState(() => _selectedType = t),
+          onIntensityChanged: (v) => setState(() => _colorIntensity = v),
+        );
+      default:
+        return const SizedBox.shrink();
+    }
   }
-
 }
