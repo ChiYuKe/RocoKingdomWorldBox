@@ -76,6 +76,7 @@ flutter:
     - assets/ui/types/
 
 
+
   # 字体资源声明
   fonts:
     - family: FZLTYJT  
