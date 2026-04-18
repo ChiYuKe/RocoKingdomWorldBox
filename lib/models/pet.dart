@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart'; // [缺失项] 必须导入 Isar 包
+
+part 'pet.g.dart'; 
 
 enum PetType {
   fire(Color(0xFFBD4A20), "火系"),
@@ -23,12 +26,31 @@ enum PetType {
   const PetType(this.themeColor, this.label);
 }
 
+
+@collection
 class Pet {
-  final String name;
+  Id isarId = Isar.autoIncrement;
+
+  @Index(unique: true, replace: true)
   final String id;
+  final String name;
+
+  @enumerated
   final PetType type;
   final List<double> stats;
-  final List<String> evolutions; 
+  final List<String> evolutions;
 
   Pet({required this.name, required this.id, required this.type, required this.stats, required this.evolutions});
+
+  // 从 JSON 映射
+  factory Pet.fromJson(Map<String, dynamic> json) {
+    return Pet(
+      id: json['id'],
+      name: json['name'],
+      // 根据字符串匹配枚举名
+      type: PetType.values.firstWhere((e) => e.name == json['type']),
+      stats: (json['stats'] as List).map((e) => (e as num).toDouble()).toList(),
+      evolutions: List<String>.from(json['evolutions']),
+    );
+  }
 }
