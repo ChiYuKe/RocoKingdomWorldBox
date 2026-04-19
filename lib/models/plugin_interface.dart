@@ -7,6 +7,9 @@ abstract class RocoPlugin {
   String get version;
   String get author;
 
+  bool get isLocked; 
+  String get correctKey;
+
   // 插件在列表中的图标
   Widget buildIcon(BuildContext context, Color accentColor);
 
