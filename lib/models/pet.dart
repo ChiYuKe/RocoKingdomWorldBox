@@ -20,7 +20,7 @@ enum PetType {
   magical(Color.fromARGB(255, 189, 164, 250), "幻系"),
   electricity(Color.fromARGB(255, 240, 200, 80), "电系"),
   dark(Color.fromARGB(255, 157, 86, 207), "幽系"),
-  mountain(Color.fromARGB(255, 248, 167, 61), "山系"),
+  mountain(Color.fromARGB(255, 248, 167, 61), "地系"),
   ice(Color.fromARGB(255, 76, 204, 255), "冰系");
 
 
@@ -47,7 +47,7 @@ class Ability {
 // 定义 Pet 数据模型
 @collection
 class Pet {
-  Id id = Isar.autoIncrement; // 必须是 int
+  Id id = Isar.autoIncrement;
 
   @Index(unique: true, replace: true)
   late String petId;
@@ -56,21 +56,33 @@ class Pet {
   
   @enumerated
   late List<PetType> types;
-  late List<double> stats;
+  late List<double> stats; 
   late List<String> evolutions;
 
-  String? abilityId; 
+  String? height;
+  String? weight;
+  String? location;
+  String? description;
+  String? abilityId;
 
   static Pet fromJson(Map<String, dynamic> json) {
     return Pet()
-
-      ..petId = json['id'].toString() 
-      ..name = json['name']
-      ..types = (json['types'] as List)
-          .map((t) => PetType.values.firstWhere((e) => e.name == t))
-          .toList()
-      ..stats = List<double>.from(json['stats'].map((x) => x.toDouble()))
-      ..evolutions = List<String>.from(json['evolutions'])
+      ..petId = json['id'].toString()
+      ..name = json['name'] ?? '未知'
+      ..types = (json['types'] as List?)
+              ?.map((t) => PetType.values.firstWhere(
+                    (e) => e.name.toLowerCase() == t.toString().toLowerCase(),
+                    orElse: () => PetType.ordinary, // 如果匹配不到给个默认系
+                  ))
+              .toList() ?? []
+      ..stats = (json['stats'] as List?)
+              ?.map((x) => (x as num).toDouble())
+              .toList() ?? []
+      ..evolutions = List<String>.from(json['evolutions'] ?? [])
+      ..height = json['height']
+      ..weight = json['weight']
+      ..location = json['location']
+      ..description = json['description']
       ..abilityId = json['abilityId'];
   }
 }
