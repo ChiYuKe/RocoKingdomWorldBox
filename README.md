@@ -143,5 +143,5 @@ https://creativecommons.org/licenses/by-nc-sa/4.0/
 
 ## 📄 License
 
-- Code: MIT License  
+- Code: GNU GENERAL PUBLIC LICENSE 3
 - Data: CC BY-NC-SA 4.0
