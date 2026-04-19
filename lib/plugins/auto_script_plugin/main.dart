@@ -1,30 +1,28 @@
 import 'package:flutter/material.dart';
 import '../../models/plugin_interface.dart';
-import '../../models/pet.dart';
-import '../../widgets/plugin_page_template.dart'; // 引入模板
-import 'widgets/contrast_ui.dart';
+import '../../widgets/plugin_page_template.dart'; 
+import 'widgets/auto_script_ui.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class CalcPlugin implements RocoPlugin {
-  final List<Pet> pokedex;
-  CalcPlugin({required this.pokedex});
-
+class AutoScriptPlugin implements RocoPlugin {
+  
   @override
-  String get id => "com.roco.plugin.calc";
+  String get id => "com.roco.plugin.auto_script";
   @override
-  String get name => "精灵对比";
+  String get name => "自动挂花脚本";
   @override
-  String get description => "对比两只精灵的属性，帮助你更好地了解它们的优劣势";
+  String get description => "一个自动挂花脚本，能够自动执行日常任务，提升游戏效率，让你轻松享受游戏乐趣";
   @override
   String get version => "V 1.0.0";
   @override
   String get author => "ChiYuKe";
 
   @override
-  bool get isLocked => false; 
+  bool get isLocked => true; 
+
   @override
-  String get correctKey => dotenv.env['PLUGIN_KEY'] ?? "default_key";  
+  String get correctKey => dotenv.env['PLUGIN_KEY'] ?? "default_key"; 
 
   @override
   Widget buildIcon(BuildContext context, Color accentColor) {
@@ -33,14 +31,12 @@ class CalcPlugin implements RocoPlugin {
 
   @override
   Widget buildEntryPage(BuildContext context, Color accentColor) {
-    // 使用通用模板包装私有 UI
     return PluginPageTemplate(
       title: name,
       subTitle: description, 
       accentColor: accentColor,
-      body: ContrastUI(
+      body: AutoScriptUI(
         accentColor: accentColor,
-        pokedex: pokedex,
       ),
     );
   }

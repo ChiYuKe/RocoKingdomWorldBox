@@ -84,7 +84,7 @@ class _ContrastUIState extends State<ContrastUI> {
             ),
             const SizedBox(height: 8),
             Text(
-              pet.type.label.toUpperCase(),
+              pet.types[0].label.toUpperCase(),
               style: const TextStyle(color: Colors.white24, fontSize: 9, fontWeight: FontWeight.bold),
             ),
           ],
@@ -348,16 +348,16 @@ class _ContrastUIState extends State<ContrastUI> {
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: pet.type.themeColor,
+                          color: pet.types[0].themeColor,
                           shape: BoxShape.circle,
                           boxShadow: [
-                            BoxShadow(color: pet.type.themeColor.withOpacity(0.3), blurRadius: 4)
+                            BoxShadow(color: pet.types[0].themeColor.withOpacity(0.3), blurRadius: 4)
                           ],
                         ),
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        pet.type.label.toUpperCase(),
+                        pet.types[0].label.toUpperCase(),
                         style: TextStyle(
                           color: Colors.white24,
                           fontSize: 9,
