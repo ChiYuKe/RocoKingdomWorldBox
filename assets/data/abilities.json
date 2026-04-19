@@ -1,0 +1,53 @@
+{
+  "version": 1,
+  "data": [
+    {
+        "id": "A001",
+        "name": "最好的伙伴",
+        "description": "造成克制伤害后，获得攻防速+20%，并回复2能量。",
+        "image": "ability_001.png"
+    },
+    {
+        "id": "A002",
+        "name": "氧循环",
+        "description": "使用草系技能后，回复10%生命。",
+        "image": "ability_002.png"
+    },
+    {
+        "id": "A003",
+        "name": "助燃",
+        "description": "使用火系技能后，获得双攻+20%。",
+        "image": "ability_003.png"
+    },
+    {
+        "id": "A004",
+        "name": "浸润",
+        "description": "使用水系技能后，全技能能耗-1。",
+        "image": "ability_004.png"
+    },
+    {
+        "id": "A041",
+        "name": "养分重吸收",
+        "description": "回合结束时，回复3能量。",
+        "image": "ability_005.png"
+    },
+    {
+        "id": "A088",
+        "name": "洁癖",
+        "description": "离场后，自己的增益和减益会被更换入场的精灵继承。",
+        "image": "ability_088.png"
+    },
+    {
+        "id": "A091",
+        "name": "贪婪",
+        "description": "敌方精灵离场后，其增益和减益会被更换入场的精灵继承。",
+        "image": "ability_091.png"
+    },
+     {
+        "id": "A107",
+        "name": "石头大餐",
+        "description": "能量不足时，消耗5%生命，代替1能量。",
+        "image": "ability_107.png"
+    }
+  ]
+}

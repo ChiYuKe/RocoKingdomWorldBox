@@ -6,98 +6,114 @@
       "name": "迪莫",
       "types": ["light"],
       "stats": [120, 80, 80, 105, 105, 92],
-      "evolutions": ["001"]
+      "evolutions": ["001"],
+      "abilityId": "A001"
+
     },
     {
       "id": "002",
       "name": "喵喵",
       "types": ["grass"],
       "stats": [65, 66, 66, 49, 91, 33],
-      "evolutions": ["002", "003", "004"]
+      "evolutions": ["002", "003", "004"],
+      "abilityId": "A002"
     },
     {
       "id": "003",
       "name": "喵呜",
       "types": ["grass"],
       "stats": [86, 87, 87, 65, 121, 44],
-      "evolutions": ["002", "003", "004"]
+      "evolutions": ["002", "003", "004"],
+      "abilityId": "A002"
     },
     {
       "id": "004",
       "name": "魔力猫",
       "types": ["grass"],
       "stats": [108, 109, 109, 81, 151, 55],
-      "evolutions": ["002", "003", "004"]
+      "evolutions": ["002", "003", "004"],
+      "abilityId": "A002"
     },
     {
       "id": "005",
       "name": "火花",
       "types": ["fire"],
       "stats": [70, 84, 37, 56, 43, 78],
-      "evolutions": ["005", "006", "007"]
+      "evolutions": ["005", "006", "007"],
+      "abilityId": "A003"
     },
         {
       "id": "006",
       "name": "焰火",
       "types": ["fire"],
       "stats": [93, 111, 49, 75, 58, 104],
-      "evolutions": ["005", "006", "007"]
+      "evolutions": ["005", "006", "007"],
+      "abilityId": "A003"
     },
         {
       "id": "007",
       "name": "火神",
       "types": ["fire"],
       "stats": [117, 139, 61, 94, 72, 130],
-      "evolutions": ["005", "006", "007"]
+      "evolutions": ["005", "006", "007"],
+      "abilityId": "A003"
     },
     {
       "id": "008",
       "name": "水蓝蓝",
       "types": ["water"],
       "stats": [75, 35, 76, 56, 79, 51],
-      "evolutions": ["008", "009", "010"]
+      "evolutions": ["008", "009", "010"],
+      "abilityId": "A004"
     },
         {
       "id": "009",
       "name": "波波拉",
       "types": ["water"],
       "stats": [100, 46, 102, 75, 106, 68],
-      "evolutions": ["008", "009", "010"]
+      "evolutions": ["008", "009", "010"],
+      "abilityId": "A004"
     },
     {
       "id": "088",
       "name": "乖乖鹄",
       "types": ["water"],
       "stats": [75, 57, 52, 83, 58, 69],
-      "evolutions": ["088", "089", "090", "091"]
+      "evolutions": ["088", "089", "090", "091"],
+      "abilityId": "A088"
+
     },
         {
       "id": "041",
       "name": "奇丽草",
       "types": ["grass"],
       "stats": [67, 69, 69, 73, 57, 48],
-      "evolutions": ["041", "042", "043"]
+      "evolutions": ["041", "042", "043"],
+      "abilityId": "A041"
     },
             {
       "id": "042",
       "name": "奇丽叶",
       "types": ["grass"],
       "stats": [90, 92, 92, 97, 76, 64],
-      "evolutions": ["041", "042", "043"]
+      "evolutions": ["041", "042", "043"],
+      "abilityId": "A041"
     },
             {
       "id": "043",
       "name": "奇丽花",
       "types": ["grass"],
       "stats": [112, 115, 115, 121, 95, 80],
-      "evolutions": ["041", "042", "043"]
+      "evolutions": ["041", "042", "043"],
+      "abilityId": "A041"
     },
     {
       "id": "107",
       "name": "罗隐",
       "types": ["mountain", "evil"],
       "stats": [107, 159, 78, 112, 70, 75],
-      "evolutions": ["105", "106", "107"]
+      "evolutions": ["105", "106", "107"],
+      "abilityId": "A107"
     }
 
   ]
