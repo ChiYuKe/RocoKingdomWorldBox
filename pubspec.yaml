@@ -87,9 +87,11 @@ flutter:
     - assets/avatars/
     - assets/ef/
     - assets/portraits/
+    - assets/abilitys/
     - assets/ui/
     - assets/ui/types/
     - assets/data/pokedex.json
+    - assets/data/abilities.json
     - .env
 
 
