@@ -504,7 +504,7 @@ class _DetailPanelState extends State<DetailPanel> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   _buildTopHeader(),
-                  Text("系列：${widget.pet.types[0].label} | 编号：No.${widget.pet.id}",
+                  Text("系列：${widget.pet.types[0].label} | 编号：No.${widget.pet.petId}",
                       style: const TextStyle(color: Colors.white54, fontSize: 13)),
                   const Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
