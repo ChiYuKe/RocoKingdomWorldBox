@@ -2,6 +2,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import '../models/pet.dart';
 import '../widgets/radar_chart.dart';
+import 'package:isar/isar.dart';
 
 
 class PokedexTab extends StatefulWidget {
@@ -345,7 +346,7 @@ class _PetListViewState extends State<PetListView> {
                     width: 56, height: 56,
                     decoration: BoxDecoration(shape: BoxShape.circle, gradient: RadialGradient(colors: [isSelected ? pet.types[0].themeColor.withOpacity(0.4) : Colors.white10, Colors.transparent])),
                     child: ClipOval(
-                      child: Image.asset('assets/avatars/pet_${pet.id}.png', fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, color: Colors.white24, size: 28)),
+                      child: Image.asset('assets/avatars/pet_${pet.petId}.png', fit: BoxFit.contain, errorBuilder: (context, error, stackTrace) => const Icon(Icons.pets, color: Colors.white24, size: 28)),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -362,7 +363,7 @@ class _PetListViewState extends State<PetListView> {
                 ],
               ),
             ),
-            Positioned(top: 12, right: 16, child: Text("#${pet.id}", style: TextStyle(color: isSelected ? pet.types[0].themeColor.withOpacity(0.8) : const Color.fromARGB(228, 255, 255, 255), fontSize: 11, fontWeight: FontWeight.w900))),
+            Positioned(top: 12, right: 16, child: Text("#${pet.petId}", style: TextStyle(color: isSelected ? pet.types[0].themeColor.withOpacity(0.8) : const Color.fromARGB(228, 255, 255, 255), fontSize: 11, fontWeight: FontWeight.w900))),
           ],
         ),
       ),
@@ -393,11 +394,58 @@ class DetailPanel extends StatefulWidget {
 }
 
 class _DetailPanelState extends State<DetailPanel> {
-  // 仅保留悬停状态，因为它只跟当前鼠标交互有关
   int? _hoverIndex;
+  
+  // 用于存储从数据库异步加载的特性对象
+  Ability? _currentAbility;
+  
+  // 静态内存缓存，防止在同一个 session 中重复查询相同的特性 ID
+  static final Map<String, Ability> _abilityCache = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAbility();
+  }
+
+  @override
+  void didUpdateWidget(DetailPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 关键逻辑：如果切换了宠物，或者该宠物的特性 ID 发生了变化，重新加载数据
+    if (oldWidget.pet.id != widget.pet.id) {
+      _loadAbility();
+    }
+  }
+
+  /// 从 Isar 数据库加载特性信息
+  Future<void> _loadAbility() async {
+    final String? aid = widget.pet.abilityId; // 假设你的 Pet 模型中有这个字段
+
+    if (aid == null || aid.isEmpty) {
+      if (mounted) setState(() => _currentAbility = null);
+      return;
+    }
+
+    // 1. 检查缓存
+    if (_abilityCache.containsKey(aid)) {
+      if (mounted) setState(() => _currentAbility = _abilityCache[aid]);
+      return;
+    }
+
+    // 2. 异步查询数据库
+    final isar = Isar.getInstance();
+    if (isar != null) {
+      // 假设你的 Ability 集合中 aid 是索引字段
+      final ability = await isar.abilitys.filter().aidEqualTo(aid).findFirst();
+      if (ability != null) {
+        _abilityCache[aid] = ability;
+        if (mounted) setState(() => _currentAbility = ability);
+      }
+    }
+  }
 
   String _getPortraitPath(int index) {
-    final String currentId = widget.pet.id;
+    final String currentId = widget.pet.petId;
     if (index == 0) return 'assets/portraits/pet_$currentId.png';
     if (index == 1) return 'assets/portraits/pet_${currentId}_s.png';
 
@@ -412,7 +460,6 @@ class _DetailPanelState extends State<DetailPanel> {
 
   @override
   Widget build(BuildContext context) {
-    // 优先使用悬停索引，否则使用外部传入的锁定索引
     int activeIndex = _hoverIndex ?? widget.lockedIndex;
     String currentPath = _getPortraitPath(activeIndex);
 
@@ -428,6 +475,7 @@ class _DetailPanelState extends State<DetailPanel> {
       child: Column(
         children: [
           const SizedBox(height: 30),
+          // 立绘展示区
           Expanded(
             flex: 3,
             child: RepaintBoundary(
@@ -447,6 +495,7 @@ class _DetailPanelState extends State<DetailPanel> {
               ),
             ),
           ),
+          // 信息详情区
           Expanded(
             flex: 7,
             child: Padding(
@@ -454,60 +503,56 @@ class _DetailPanelState extends State<DetailPanel> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-                    Text(widget.pet.name,
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 32,
-                            fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 12),
-                    _buildTypeIcons(),
-                    const Spacer(),
-                    Row(
-                      children: [
-                        _buildExtraTag(0, 'assets/ui/ui_pet.png'),
-                        _buildExtraTag(1, 'assets/ui/ui_shiny.png'),
-                        _buildExtraTag(2, 'assets/ui/ui_egg.png'),
-                        _buildExtraTag(3, 'assets/ui/ui_fruit.png'),
-                      ],
-                    ),
-                  ]),
+                  _buildTopHeader(),
                   Text("系列：${widget.pet.types[0].label} | 编号：No.${widget.pet.id}",
                       style: const TextStyle(color: Colors.white54, fontSize: 13)),
                   const Padding(
                       padding: EdgeInsets.symmetric(vertical: 12),
                       child: Divider(color: Colors.white10, thickness: 1)),
+                  
                   Expanded(
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // 左侧：雷达图
                         Expanded(
                             flex: 4,
-                            child: AspectRatio(
-                                aspectRatio: 1,
-                                child: LayoutBuilder(
-                                    builder: (context, constraints) => Stack(
-                                            clipBehavior: Clip.none,
-                                            children: [
-                                              StatRadarChart(
-                                                  stats: widget.pet.stats,
-                                                  color: widget.accentColor),
-                                              ..._buildCornerIcons(
-                                                  constraints.maxWidth,
-                                                  constraints.maxHeight)
-                                            ])))),
-                        const SizedBox(width: 25),
+                            child: Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: AspectRatio(
+                                  aspectRatio: 1,
+                                  child: LayoutBuilder(
+                                      builder: (context, constraints) => Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                StatRadarChart(
+                                                    stats: widget.pet.stats,
+                                                    color: widget.accentColor),
+                                                ..._buildCornerIcons(
+                                                    constraints.maxWidth,
+                                                    constraints.maxHeight)
+                                              ]))),
+                            )),
+                        
+                        const SizedBox(width: 30),
+
+                        // 右侧：特性 + 数值条
                         Expanded(
                           flex: 6,
-                          child: Wrap(
-                            runSpacing: 18,
-                            spacing: 20,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              _buildAnimatedStat(label: "生命", value: widget.pet.stats[0], color: widget.accentColor),
-                              _buildAnimatedStat(label: "物攻", value: widget.pet.stats[1], color: widget.accentColor),
-                              _buildAnimatedStat(label: "魔攻", value: widget.pet.stats[2], color: widget.accentColor),
-                              _buildAnimatedStat(label: "物防", value: widget.pet.stats[3], color: widget.accentColor),
-                              _buildAnimatedStat(label: "魔防", value: widget.pet.stats[4], color: widget.accentColor),
-                              _buildAnimatedStat(label: "速度", value: widget.pet.stats[5], color: widget.accentColor),
+                              _buildAbilitySection(),
+                              
+                              Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 20),
+                                child: Divider(
+                                  color: widget.accentColor.withOpacity(0.3),
+                                  thickness: 1.5,
+                                ),
+                              ),
+
+                              _buildStatsGrid(),
                             ],
                           ),
                         ),
@@ -518,6 +563,7 @@ class _DetailPanelState extends State<DetailPanel> {
               ),
             ),
           ),
+          // 底部操作栏
           Padding(
               padding: const EdgeInsets.only(bottom: 35),
               child: Row(
@@ -532,8 +578,104 @@ class _DetailPanelState extends State<DetailPanel> {
     );
   }
 
-  // --- 辅助 UI 方法（保持不变） ---
+  // 内部辅助构建方法
+  Widget _buildTopHeader() {
+    return Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+      Text(widget.pet.name,
+          style: const TextStyle(
+              color: Colors.white,
+              fontSize: 32,
+              fontWeight: FontWeight.bold)),
+      const SizedBox(width: 12),
+      _buildTypeIcons(),
+      const Spacer(),
+      Row(
+        children: [
+          _buildExtraTag(0, 'assets/ui/ui_pet.png'),
+          _buildExtraTag(1, 'assets/ui/ui_shiny.png'),
+          _buildExtraTag(2, 'assets/ui/ui_egg.png'),
+          _buildExtraTag(3, 'assets/ui/ui_fruit.png'),
+        ],
+      ),
+    ]);
+  }
 
+  Widget _buildAbilitySection() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Row(
+        children: [
+          const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text("特", style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
+              Text("性", style: TextStyle(color: Colors.white70, fontSize: 13, fontWeight: FontWeight.bold)),
+            ],
+          ),
+          const SizedBox(width: 15),
+          Container(
+            width: 38,
+            height: 38,
+            decoration: BoxDecoration(
+              color: widget.accentColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Center(
+              child: _currentAbility != null
+                ? Image.asset(
+                    'assets/abilitys/${_currentAbility!.image}', // 使用数据库中的图片路径
+                    width: 40,
+                    height: 40,
+                    errorBuilder: (context, _, __) => Icon(Icons.auto_awesome, color: widget.accentColor, size: 18),
+                  )
+                : Icon(Icons.hourglass_empty, color: widget.accentColor, size: 18),
+            ),
+          ),
+          const SizedBox(width: 15),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  _currentAbility?.name ?? "读取中...", 
+                  style: TextStyle(color: widget.accentColor, fontSize: 16, fontWeight: FontWeight.w900),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  _currentAbility?.description ?? "正在努力寻找特性的力量...",
+                  style: const TextStyle(color: Colors.white70, fontSize: 13, height: 1.4),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsGrid() {
+    return Wrap(
+      runSpacing: 18,
+      spacing: 20,
+      children: [
+        _buildAnimatedStat(label: "生命", value: widget.pet.stats[0], color: widget.accentColor),
+        _buildAnimatedStat(label: "物攻", value: widget.pet.stats[1], color: widget.accentColor),
+        _buildAnimatedStat(label: "魔攻", value: widget.pet.stats[2], color: widget.accentColor),
+        _buildAnimatedStat(label: "物防", value: widget.pet.stats[3], color: widget.accentColor),
+        _buildAnimatedStat(label: "魔防", value: widget.pet.stats[4], color: widget.accentColor),
+        _buildAnimatedStat(label: "速度", value: widget.pet.stats[5], color: widget.accentColor),
+      ],
+    );
+  }
+
+
+
+
+
+  // 辅助 UI 方法
   Widget _buildTypeIcons() {
     return Row(
       children: widget.pet.types.map((type) => Padding(
@@ -580,7 +722,7 @@ class _DetailPanelState extends State<DetailPanel> {
   
   // 进化链窗口
   void _showEvolutionWindow(BuildContext context) {
-    String currentId = widget.pet.id;
+    String currentId = widget.pet.petId;
     
     // --- 状态变量定义在 StatefulBuilder 外部，通过闭包实现状态持久化 ---
     bool isHoveringShiny = false; // 鼠标悬停预览状态
