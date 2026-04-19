@@ -22,7 +22,7 @@ class AutoScriptPlugin implements RocoPlugin {
   bool get isLocked => true; 
 
   @override
-  String get correctKey => dotenv.env['PLUGIN_KEY'] ?? "default_key"; 
+  String get correctKey => dotenv.env['PLUGIN_AUTO_KEY'] ?? "default_key"; 
 
   @override
   Widget buildIcon(BuildContext context, Color accentColor) {
