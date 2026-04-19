@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart'; // [缺失项] 必须导入 Isar 包
+import 'package:isar/isar.dart'; 
 
 part 'pet.g.dart'; 
 
@@ -28,33 +28,49 @@ enum PetType {
   final String label;
   const PetType(this.themeColor, this.label);
 }
+// 如果改了数据模型，记得在终端执行 dart run build_runner build --delete-conflicting-outputs 来更新生成的代码
 
-
+// 定义 Ability 数据模型
 @collection
-class Pet {
-  Id isarId = Isar.autoIncrement;
+class Ability {
+  Id id = Isar.autoIncrement; 
 
   @Index(unique: true, replace: true)
-  final String id;
-  final String name;
+  late String aid; 
+  
+  late String name;
+  late String description;
+  late String image;
+}
 
+
+// 定义 Pet 数据模型
+@collection
+class Pet {
+  Id id = Isar.autoIncrement; // 必须是 int
+
+  @Index(unique: true, replace: true)
+  late String petId;
+  
+  late String name;
+  
   @enumerated
-  final List<PetType> types;
-  final List<double> stats;
-  final List<String> evolutions;
+  late List<PetType> types;
+  late List<double> stats;
+  late List<String> evolutions;
 
-  Pet({required this.name, required this.id, required this.types, required this.stats, required this.evolutions});
+  String? abilityId; 
 
-  // 从 JSON 映射
-  factory Pet.fromJson(Map<String, dynamic> json) {
-    return Pet(
-      id: json['id'],
-      name: json['name'],
-      types: (json['types'] as List)
+  static Pet fromJson(Map<String, dynamic> json) {
+    return Pet()
+
+      ..petId = json['id'].toString() 
+      ..name = json['name']
+      ..types = (json['types'] as List)
           .map((t) => PetType.values.firstWhere((e) => e.name == t))
-          .toList(),
-      stats: (json['stats'] as List).map((e) => (e as num).toDouble()).toList(),
-      evolutions: List<String>.from(json['evolutions']),
-    );
+          .toList()
+      ..stats = List<double>.from(json['stats'].map((x) => x.toDouble()))
+      ..evolutions = List<String>.from(json['evolutions'])
+      ..abilityId = json['abilityId'];
   }
 }
