@@ -17,8 +17,6 @@
 ## 📷 UI 预览
 
 
-https://github.com/user-attachments/assets/5c3cc2ae-fdfd-4491-ab0b-b1b78b5838d0
-
 
 ![UI预览](./docs/preview.png)
 ![UI预览](./docs/preview2.png)
