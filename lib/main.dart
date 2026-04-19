@@ -82,45 +82,79 @@ class _MainScaffoldState extends State<MainScaffold> {
 
   /// 初始化数据库与数据
   Future<void> _initApp() async {
-
     final dir = await getApplicationDocumentsDirectory();
-    _isar = await Isar.open([PetSchema], directory: dir.path);
+    final prefs = await SharedPreferences.getInstance(); // 提前获取 prefs
 
-    // 加载资源文件中的 JSON
-    final String jsonString = await rootBundle.loadString('assets/data/pokedex.json');
-    final Map<String, dynamic> jsonMap = json.decode(jsonString);
-    final int jsonVersion = jsonMap['version'];
+    // 1. 打开数据库（注意：必须包含 AbilitySchema）
+    _isar = await Isar.open(
+      [PetSchema, AbilitySchema], 
+      directory: dir.path,
+    );
 
-    // 检查本地版本号
-    final prefs = await SharedPreferences.getInstance();
-    final int localVersion = prefs.getInt('pokedex_version') ?? 0;
+    // 处理特性数据 (Abilities) 
+    try {
+      final String abiRes = await rootBundle.loadString('assets/data/abilities.json');
+      final Map<String, dynamic> abiJson = json.decode(abiRes);
+      final int abiVersion = abiJson['version'] ?? 0;
+      final int localAbiVer = prefs.getInt('abi_version') ?? -1;
+      // 如果版本更新，同步到数据库 abiVersion > localAbiVer
+      if (true) {
+        final List<dynamic> data = abiJson['data'];
+        final abilities = data.map((item) => Ability()
+          ..aid = item['id']
+          ..name = item['name']
+          ..description = item['description']
+          ..image = item['image']).toList();
 
-    // 如果 JSON 版本更高，则更新数据库  jsonVersion > localVersion
-    if (true) {
-      final List<dynamic> data = jsonMap['data'];
-      final List<Pet> newPets = data.map((item) => Pet.fromJson(item)).toList();
-
-      await _isar.writeTxn(() async {
-        // 由于设置了 @Index(unique: true, replace: true)，相同 ID 的精灵会被自动覆盖
-        await _isar.pets.putAll(newPets); 
-      });
-
-      // 更新本地版本记录
-      await prefs.setInt('pokedex_version', jsonVersion);
+        await _isar!.writeTxn(() async {
+          await _isar!.abilitys.putAll(abilities);
+        });
+        await prefs.setInt('abi_version', abiVersion);
+        debugPrint("特性数据更新至版本: $abiVersion");
+      }
+    } catch (e) {
+      debugPrint("加载特性数据失败: $e");
     }
 
-    // 从数据库读取最终展示数据
-    final allPets = await _isar.pets.where().findAll();
+    // 处理精灵数据 (Pokedex)
+    try {
+      final String jsonString = await rootBundle.loadString('assets/data/pokedex.json');
+      final Map<String, dynamic> jsonMap = json.decode(jsonString);
+      final int jsonVersion = jsonMap['version'] ?? 0;
+      final int localVersion = prefs.getInt('pokedex_version') ?? 0;
 
-    setState(() {
-      _pokedex = allPets;
-      _plugins = [
-        calc.CalcPlugin(pokedex: _pokedex), 
-        update_pet_data.UpdatePetDataPlugin(),
-        auto_script.AutoScriptPlugin()
-      ];
-      _isLoading = false;
-    });
+      // 如果版本更新，同步到数据库 jsonVersion > localVersion
+      if (true) {
+        final List<dynamic> data = jsonMap['data'];
+        final List<Pet> newPets = data.map((item) => Pet.fromJson(item)).toList();
+
+        await _isar!.writeTxn(() async {
+          // 由于设置了 @Index(unique: true, replace: true)，相同 petId 的精灵会被替换更新
+          await _isar!.pets.putAll(newPets); 
+        });
+
+        await prefs.setInt('pokedex_version', jsonVersion);
+        debugPrint("精灵数据更新至版本: $jsonVersion");
+      }
+    } catch (e) {
+      debugPrint("加载精灵数据失败: $e");
+    }
+
+    // 读取最终展示数据
+    final allPets = await _isar!.pets.where().findAll();
+
+
+    if (mounted) {
+      setState(() {
+        _pokedex = allPets;
+        _plugins = [
+          calc.CalcPlugin(pokedex: _pokedex), 
+          update_pet_data.UpdatePetDataPlugin(),
+          auto_script.AutoScriptPlugin()
+        ];
+        _isLoading = false;
+      });
+    }
   }
 
   @override
