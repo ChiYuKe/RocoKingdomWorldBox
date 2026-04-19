@@ -19,7 +19,10 @@ enum PetType {
   mechanical(Color.fromRGBO(62, 194, 161, 1), "机械系"),
   magical(Color.fromARGB(255, 189, 164, 250), "幻系"),
   electricity(Color.fromARGB(255, 240, 200, 80), "电系"),
-  dark(Color.fromARGB(255, 157, 86, 207), "幽系");
+  dark(Color.fromARGB(255, 157, 86, 207), "幽系"),
+  mountain(Color.fromARGB(255, 248, 167, 61), "山系"),
+  ice(Color.fromARGB(255, 76, 204, 255), "冰系");
+
 
   final Color themeColor;
   final String label;
@@ -36,19 +39,20 @@ class Pet {
   final String name;
 
   @enumerated
-  final PetType type;
+  final List<PetType> types;
   final List<double> stats;
   final List<String> evolutions;
 
-  Pet({required this.name, required this.id, required this.type, required this.stats, required this.evolutions});
+  Pet({required this.name, required this.id, required this.types, required this.stats, required this.evolutions});
 
   // 从 JSON 映射
   factory Pet.fromJson(Map<String, dynamic> json) {
     return Pet(
       id: json['id'],
       name: json['name'],
-      // 根据字符串匹配枚举名
-      type: PetType.values.firstWhere((e) => e.name == json['type']),
+      types: (json['types'] as List)
+          .map((t) => PetType.values.firstWhere((e) => e.name == t))
+          .toList(),
       stats: (json['stats'] as List).map((e) => (e as num).toDouble()).toList(),
       evolutions: List<String>.from(json['evolutions']),
     );

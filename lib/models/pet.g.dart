@@ -37,11 +37,11 @@ const PetSchema = CollectionSchema(
       name: r'stats',
       type: IsarType.doubleList,
     ),
-    r'type': PropertySchema(
+    r'types': PropertySchema(
       id: 4,
-      name: r'type',
-      type: IsarType.byte,
-      enumMap: _PettypeEnumValueMap,
+      name: r'types',
+      type: IsarType.byteList,
+      enumMap: _PettypesEnumValueMap,
     )
   },
   estimateSize: _petEstimateSize,
@@ -88,6 +88,7 @@ int _petEstimateSize(
   bytesCount += 3 + object.id.length * 3;
   bytesCount += 3 + object.name.length * 3;
   bytesCount += 3 + object.stats.length * 8;
+  bytesCount += 3 + object.types.length;
   return bytesCount;
 }
 
@@ -101,7 +102,7 @@ void _petSerialize(
   writer.writeString(offsets[1], object.id);
   writer.writeString(offsets[2], object.name);
   writer.writeDoubleList(offsets[3], object.stats);
-  writer.writeByte(offsets[4], object.type.index);
+  writer.writeByteList(offsets[4], object.types.map((e) => e.index).toList());
 }
 
 Pet _petDeserialize(
@@ -115,8 +116,11 @@ Pet _petDeserialize(
     id: reader.readString(offsets[1]),
     name: reader.readString(offsets[2]),
     stats: reader.readDoubleList(offsets[3]) ?? [],
-    type:
-        _PettypeValueEnumMap[reader.readByteOrNull(offsets[4])] ?? PetType.fire,
+    types: reader
+            .readByteList(offsets[4])
+            ?.map((e) => _PettypesValueEnumMap[e] ?? PetType.fire)
+            .toList() ??
+        [],
   );
   object.isarId = id;
   return object;
@@ -138,14 +142,17 @@ P _petDeserializeProp<P>(
     case 3:
       return (reader.readDoubleList(offset) ?? []) as P;
     case 4:
-      return (_PettypeValueEnumMap[reader.readByteOrNull(offset)] ??
-          PetType.fire) as P;
+      return (reader
+              .readByteList(offset)
+              ?.map((e) => _PettypesValueEnumMap[e] ?? PetType.fire)
+              .toList() ??
+          []) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-const _PettypeEnumValueMap = {
+const _PettypesEnumValueMap = {
   'fire': 0,
   'water': 1,
   'grass': 2,
@@ -162,8 +169,10 @@ const _PettypeEnumValueMap = {
   'magical': 13,
   'electricity': 14,
   'dark': 15,
+  'mountain': 16,
+  'ice': 17,
 };
-const _PettypeValueEnumMap = {
+const _PettypesValueEnumMap = {
   0: PetType.fire,
   1: PetType.water,
   2: PetType.grass,
@@ -180,6 +189,8 @@ const _PettypeValueEnumMap = {
   13: PetType.magical,
   14: PetType.electricity,
   15: PetType.dark,
+  16: PetType.mountain,
+  17: PetType.ice,
 };
 
 Id _petGetId(Pet object) {
@@ -1034,42 +1045,43 @@ extension PetQueryFilter on QueryBuilder<Pet, Pet, QFilterCondition> {
     });
   }
 
-  QueryBuilder<Pet, Pet, QAfterFilterCondition> typeEqualTo(PetType value) {
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesElementEqualTo(
+      PetType value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'type',
+        property: r'types',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Pet, Pet, QAfterFilterCondition> typeGreaterThan(
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesElementGreaterThan(
     PetType value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.greaterThan(
         include: include,
-        property: r'type',
+        property: r'types',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Pet, Pet, QAfterFilterCondition> typeLessThan(
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesElementLessThan(
     PetType value, {
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.lessThan(
         include: include,
-        property: r'type',
+        property: r'types',
         value: value,
       ));
     });
   }
 
-  QueryBuilder<Pet, Pet, QAfterFilterCondition> typeBetween(
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesElementBetween(
     PetType lower,
     PetType upper, {
     bool includeLower = true,
@@ -1077,12 +1089,95 @@ extension PetQueryFilter on QueryBuilder<Pet, Pet, QFilterCondition> {
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
-        property: r'type',
+        property: r'types',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
       ));
+    });
+  }
+
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'types',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'types',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'types',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'types',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'types',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Pet, Pet, QAfterFilterCondition> typesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'types',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
     });
   }
 }
@@ -1113,18 +1208,6 @@ extension PetQuerySortBy on QueryBuilder<Pet, Pet, QSortBy> {
   QueryBuilder<Pet, Pet, QAfterSortBy> sortByNameDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Pet, Pet, QAfterSortBy> sortByType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'type', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Pet, Pet, QAfterSortBy> sortByTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'type', Sort.desc);
     });
   }
 }
@@ -1165,18 +1248,6 @@ extension PetQuerySortThenBy on QueryBuilder<Pet, Pet, QSortThenBy> {
       return query.addSortBy(r'name', Sort.desc);
     });
   }
-
-  QueryBuilder<Pet, Pet, QAfterSortBy> thenByType() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'type', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Pet, Pet, QAfterSortBy> thenByTypeDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'type', Sort.desc);
-    });
-  }
 }
 
 extension PetQueryWhereDistinct on QueryBuilder<Pet, Pet, QDistinct> {
@@ -1205,9 +1276,9 @@ extension PetQueryWhereDistinct on QueryBuilder<Pet, Pet, QDistinct> {
     });
   }
 
-  QueryBuilder<Pet, Pet, QDistinct> distinctByType() {
+  QueryBuilder<Pet, Pet, QDistinct> distinctByTypes() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'type');
+      return query.addDistinctBy(r'types');
     });
   }
 }
@@ -1243,9 +1314,9 @@ extension PetQueryProperty on QueryBuilder<Pet, Pet, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Pet, PetType, QQueryOperations> typeProperty() {
+  QueryBuilder<Pet, List<PetType>, QQueryOperations> typesProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'type');
+      return query.addPropertyName(r'types');
     });
   }
 }
