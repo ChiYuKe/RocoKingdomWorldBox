@@ -55,19 +55,6 @@
       "abilityId": "A002"
     },
     {
-      "id": "004",
-      "name": "叶冕魔力猫",
-      "types": ["grass"],
-      "total_stats": "649",
-      "stats": [108, 127, 127, 81, 151, 55],
-      "height": "2.4~3M",
-      "weight": "246~315KG",
-      "location": "未知",
-      "description": "“每天尽情地吃可可果，和喜欢的小洛克一起冒险，是很开心的生活。”",
-      "evolutions": ["004"],
-      "abilityId": "A004"
-    },
-    {
       "id": "005",
       "name": "火花",
       "types": ["fire"],
@@ -105,19 +92,6 @@
       "description": "强大的火焰之灵，只是靠近它就能够感受到温度的急剧变化。如果没有脖子上的项圈，它的火焰可能会暴走。“在磨练中成长，在烈火中重生，用意志在战斗，用生命在燃烧，永远的火神”。",
       "evolutions": ["005", "006", "007"],
       "abilityId": "A005"
-    },
-    {
-      "id": "007",
-      "name": "烈火战神",
-      "types": ["fire"],
-      "total_stats": "672",
-      "stats": [117, 175, 84, 94, 72, 130],
-      "height": "2.47~3.01M",
-      "weight": "183~267KG",
-      "location": "未知",
-      "description": "“在磨练中成长，在烈火中重生，用意志在战斗，用生命在燃烧，永远的火神”。",
-      "evolutions": ["007"],
-      "abilityId": "A007"
     },
     {
       "id": "008",
@@ -159,19 +133,6 @@
       "abilityId": "A008"
     },
     {
-      "id": "010",
-      "name": "圣水守护",
-      "types": ["water"],
-      "total_stats": "667",
-      "stats": [125, 67, 141, 104, 145, 85],
-      "height": "1.72~1.94M",
-      "weight": "137~172KG",
-      "location": "未知",
-      "description": "“无论是云中落下的一滴水，还是湖面中微风吹起的一道涟漪，都有她的身影。”",
-      "evolutions": ["010"],
-      "abilityId": "A010"
-    },
-    {
       "id": "011",
       "name": "鸭吉吉",
       "types": ["ordinary"],
@@ -181,19 +142,6 @@
       "weight": "14.3~18.2KG",
       "location": "未知",
       "description": "",
-      "evolutions": ["011"],
-      "abilityId": "A011"
-    },
-    {
-      "id": "011",
-      "name": "鸭吉吉国王",
-      "types": ["ordinary"],
-      "total_stats": "569",
-      "stats": [136, 135, 50, 79, 64, 105],
-      "height": "1.65~2.07M",
-      "weight": "93.7~140KG",
-      "location": "未知",
-      "description": "啪嗒啪嗒，鸭吉吉国王来了。那边的，别看怀表了，让时间听国王的；这边的毛太蓬松了，站紧实一点，别挡着国王的道了。嗯？还有你，既然来了我们鸭吉吉王国，记得要给过路费鸭！",
       "evolutions": ["011"],
       "abilityId": "A011"
     },
