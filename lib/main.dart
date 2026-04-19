@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 
 import 'models/pet.dart';
@@ -15,11 +15,30 @@ import 'tabs/plugins_tab.dart';
 import 'models/plugin_interface.dart';
 import 'plugins/calc_plugin/main.dart' as calc;
 import 'plugins/update_pet_data_plugin/main.dart' as update_pet_data;
+import 'plugins/auto_script_plugin/main.dart' as auto_script;
 
-void main() => runApp(const RocoPokedexApp());
+
+
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    await dotenv.load(fileName: ".env");
+  } catch (e) {
+    debugPrint("环境变量加载失败: $e");
+  }
+  runApp(const RocoPokedexApp());
+}
+
+
+
+// void main() => runApp(const RocoPokedexApp());
 
 class RocoPokedexApp extends StatelessWidget {
   const RocoPokedexApp({super.key});
+  
+
+  
 
   @override
   Widget build(BuildContext context) {
@@ -95,7 +114,11 @@ class _MainScaffoldState extends State<MainScaffold> {
 
     setState(() {
       _pokedex = allPets;
-      _plugins = [calc.CalcPlugin(pokedex: _pokedex), update_pet_data.CalcPlugin()];
+      _plugins = [
+        calc.CalcPlugin(pokedex: _pokedex), 
+        update_pet_data.UpdatePetDataPlugin(),
+        auto_script.AutoScriptPlugin()
+      ];
       _isLoading = false;
     });
   }
@@ -114,7 +137,7 @@ class _MainScaffoldState extends State<MainScaffold> {
 
     final Color currentEffectiveColor = _isColorLocked 
         ? _selectedType.themeColor 
-        : _pokedex[_selectedIndex].type.themeColor;
+        : _pokedex[_selectedIndex].types[0].themeColor;
 
     return Scaffold(
       backgroundColor: Color.lerp(
