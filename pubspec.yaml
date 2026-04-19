@@ -41,6 +41,11 @@ dependencies:
   isar_flutter_libs: ^3.1.0 # 包含各平台所需的二进制库
   path_provider: ^2.1.0    # 用于获取数据库存放路径
 
+  http: ^1.1.0
+  html: ^0.15.4
+
+  flutter_dotenv: ^5.1.0
+
 
  #  window_manager: ^0.4.3
 
@@ -80,10 +85,12 @@ flutter:
   assets:
     - assets/images/
     - assets/avatars/
+    - assets/ef/
     - assets/portraits/
     - assets/ui/
     - assets/ui/types/
     - assets/data/pokedex.json
+    - .env
 
 
 
