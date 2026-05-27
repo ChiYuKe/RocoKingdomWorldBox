@@ -39,13 +39,23 @@ class PluginsTab extends StatelessWidget {
       children: [
         Row(
           children: [
-            const Text("插件扩展", style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+            const Text(
+              "插件扩展",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(width: 12),
             _buildBadge(),
           ],
         ),
         const SizedBox(height: 8),
-        Text("通过插件扩展来增强图鉴功能", style: TextStyle(color: Colors.white.withOpacity(0.4))),
+        Text(
+          "通过插件扩展来增强图鉴功能",
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.4)),
+        ),
       ],
     );
   }
@@ -54,11 +64,18 @@ class PluginsTab extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
-        color: accentColor.withOpacity(0.15),
+        color: accentColor.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(6),
-        border: Border.all(color: accentColor.withOpacity(0.3)),
+        border: Border.all(color: accentColor.withValues(alpha: 0.3)),
       ),
-      child: Text("${plugins.length}", style: TextStyle(color: accentColor, fontSize: 12, fontWeight: FontWeight.bold)),
+      child: Text(
+        "${plugins.length}",
+        style: TextStyle(
+          color: accentColor,
+          fontSize: 12,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
@@ -70,17 +87,14 @@ class PluginsTab extends StatelessWidget {
         crossAxisSpacing: 16,
         childAspectRatio: 1.6,
       ),
-      itemCount: plugins.length + 1,
+      itemCount: plugins.length,
       itemBuilder: (context, index) {
-        if (index < plugins.length) {
-          return _buildPluginCard(context, plugins[index]);
-        }
-        // return _buildAddMoreCard();
+        return _buildPluginCard(context, plugins[index]);
       },
     );
   }
 
-Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
+  Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
     return GestureDetector(
       onTap: () {
         if (plugin.isLocked) {
@@ -95,22 +109,23 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: const Color(0xFF151515).withOpacity(0.8),
+              color: const Color(0xFF151515).withValues(alpha: 0.8),
               borderRadius: BorderRadius.circular(20),
               // 锁定状态使用主题色边框，普通状态使用暗色边框
               border: Border.all(
-                color: plugin.isLocked 
-                    ? accentColor.withOpacity(0.3) 
-                    : Colors.white.withOpacity(0.08),
+                color: plugin.isLocked
+                    ? accentColor.withValues(alpha: 0.3)
+                    : Colors.white.withValues(alpha: 0.08),
                 width: plugin.isLocked ? 1.5 : 1.0,
               ),
             ),
             child: Row(
               children: [
                 Container(
-                  width: 44, height: 44,
+                  width: 44,
+                  height: 44,
                   decoration: BoxDecoration(
-                    color: accentColor.withOpacity(0.1),
+                    color: accentColor.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: plugin.buildIcon(context, accentColor),
@@ -124,8 +139,21 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(plugin.name, style: const TextStyle(color: Colors.white, fontSize: 15, fontWeight: FontWeight.bold)),
-                          Text(plugin.version, style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 10)),
+                          Text(
+                            plugin.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            plugin.version,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.2),
+                              fontSize: 10,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -133,10 +161,21 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
                         plugin.description,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
-                        style: TextStyle(color: Colors.white.withOpacity(0.35), fontSize: 11, height: 1.2),
+                        style: TextStyle(
+                          color: Colors.white.withValues(alpha: 0.35),
+                          fontSize: 11,
+                          height: 1.2,
+                        ),
                       ),
                       const SizedBox(height: 6),
-                      Text("@${plugin.author}", style: TextStyle(color: accentColor.withOpacity(0.5), fontSize: 10, fontStyle: FontStyle.italic)),
+                      Text(
+                        "@${plugin.author}",
+                        style: TextStyle(
+                          color: accentColor.withValues(alpha: 0.5),
+                          fontSize: 10,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -152,7 +191,7 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
               child: Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: accentColor.withOpacity(0.15),
+                  color: accentColor.withValues(alpha: 0.15),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(Icons.lock_rounded, size: 14, color: accentColor),
@@ -169,16 +208,19 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
 
     showDialog(
       context: context,
-      barrierDismissible: false, 
+      barrierDismissible: false,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF2D2D2D), 
+        backgroundColor: const Color(0xFF2D2D2D),
         title: const Text("插件授权", style: TextStyle(color: Colors.white)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               "使用「${plugin.name}」需要输入授权码",
-              style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.5),
+                fontSize: 13,
+              ),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -187,7 +229,9 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: "请输入秘钥",
-                hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
+                hintStyle: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.2),
+                ),
                 enabledBorder: const UnderlineInputBorder(
                   borderSide: BorderSide(color: Colors.white12),
                 ),
@@ -199,7 +243,10 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text("取消", style: TextStyle(color: Colors.white.withOpacity(0.5))),
+            child: Text(
+              "取消",
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
+            ),
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(backgroundColor: accentColor),
@@ -209,9 +256,9 @@ Widget _buildPluginCard(BuildContext context, RocoPlugin plugin) {
                 Navigator.pop(context); // 关闭对话框
                 _navigateToPlugin(context, plugin); // 进入插件
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("秘钥验证失败，请重试")),
-                );
+                ScaffoldMessenger.of(
+                  context,
+                ).showSnackBar(const SnackBar(content: Text("秘钥验证失败，请重试")));
               }
             },
             child: const Text("确定", style: TextStyle(color: Colors.white)),

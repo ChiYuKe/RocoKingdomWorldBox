@@ -5,7 +5,11 @@ class EggGroupUI extends StatefulWidget {
   final Color accentColor;
   final List<PetModel> allPets;
 
-  const EggGroupUI({super.key, required this.accentColor, required this.allPets});
+  const EggGroupUI({
+    super.key,
+    required this.accentColor,
+    required this.allPets,
+  });
 
   @override
   State<EggGroupUI> createState() => _EggGroupUIState();
@@ -16,15 +20,27 @@ class _EggGroupUIState extends State<EggGroupUI> {
   Map<int, List<PetModel>> _groupedResults = {};
   Map<int, bool> _expandedStates = {};
   final TextEditingController _searchController = TextEditingController();
-  
+
   List<PetModel> _searchSuggestions = [];
-  List<PetModel> _searchHistory = []; 
+  final List<PetModel> _searchHistory = [];
   final FocusNode _focusNode = FocusNode();
 
   final Map<int, String> _eggGroupNameMap = {
-    1: "植物组", 2: "巨灵组", 3: "两栖组", 4: "昆虫组", 5: "天空组",
-    6: "动物组", 7: "妖精组", 8: "植物组", 9: "拟人组", 10: "软体组",
-    11: "大地组", 12: "魔力组", 13: "海洋组", 14: "龙组", 15: "机械组",
+    1: "植物组",
+    2: "巨灵组",
+    3: "两栖组",
+    4: "昆虫组",
+    5: "天空组",
+    6: "动物组",
+    7: "妖精组",
+    8: "植物组",
+    9: "拟人组",
+    10: "软体组",
+    11: "大地组",
+    12: "魔力组",
+    13: "海洋组",
+    14: "龙组",
+    15: "机械组",
   };
 
   @override
@@ -47,9 +63,14 @@ class _EggGroupUIState extends State<EggGroupUI> {
       setState(() => _searchSuggestions = []);
       return;
     }
-    final suggestions = widget.allPets.where((p) => 
-      p.name.contains(query) || p.pictorialBookId.toString().startsWith(query)
-    ).take(5).toList();
+    final suggestions = widget.allPets
+        .where(
+          (p) =>
+              p.name.contains(query) ||
+              p.pictorialBookId.toString().startsWith(query),
+        )
+        .take(5)
+        .toList();
     setState(() => _searchSuggestions = suggestions);
   }
 
@@ -60,7 +81,7 @@ class _EggGroupUIState extends State<EggGroupUI> {
       _searchHistory.removeWhere((p) => p.id == pet.id);
       _searchHistory.insert(0, pet);
       if (_searchHistory.length > 8) _searchHistory.removeLast();
-      _searchSuggestions = []; 
+      _searchSuggestions = [];
     });
     _calculateMatch(pet);
   }
@@ -74,10 +95,13 @@ class _EggGroupUIState extends State<EggGroupUI> {
 
       for (var p in widget.allPets) {
         if (p.id == target.id) continue;
-        int commonCount = p.eggGroup.where((id) => target.eggGroup.contains(id)).length;
+        int commonCount = p.eggGroup
+            .where((id) => target.eggGroup.contains(id))
+            .length;
         if (commonCount > 0) {
-          bool isCompatible = !(target.proportionMale == 10 && p.proportionMale == 10) &&
-                             !(target.proportionMale == 0 && p.proportionMale == 0);
+          bool isCompatible =
+              !(target.proportionMale == 10 && p.proportionMale == 10) &&
+              !(target.proportionMale == 0 && p.proportionMale == 0);
           if (isCompatible) {
             _groupedResults.putIfAbsent(commonCount, () => []).add(p);
           }
@@ -89,13 +113,18 @@ class _EggGroupUIState extends State<EggGroupUI> {
         _expandedStates[key] = true;
       }
 
-      _groupedResults.forEach((key, list) => list.sort((a, b) => a.pictorialBookId.compareTo(b.pictorialBookId)));
+      _groupedResults.forEach(
+        (key, list) =>
+            list.sort((a, b) => a.pictorialBookId.compareTo(b.pictorialBookId)),
+      );
     });
   }
 
   PetModel _findBaseForm(PetModel current) {
     try {
-      final prevForm = widget.allPets.firstWhere((p) => p.evolutionPetId.contains(current.id));
+      final prevForm = widget.allPets.firstWhere(
+        (p) => p.evolutionPetId.contains(current.id),
+      );
       return _findBaseForm(prevForm);
     } catch (_) {
       return current;
@@ -114,9 +143,9 @@ class _EggGroupUIState extends State<EggGroupUI> {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: p.mainColor.withOpacity(0.15),
+        color: p.mainColor.withValues(alpha: 0.15),
         shape: BoxShape.circle,
-        border: Border.all(color: p.mainColor.withOpacity(0.3), width: 1),
+        border: Border.all(color: p.mainColor.withValues(alpha: 0.3), width: 1),
       ),
       child: ClipOval(
         child: Transform.scale(
@@ -127,7 +156,11 @@ class _EggGroupUIState extends State<EggGroupUI> {
             errorBuilder: (context, error, stackTrace) => Center(
               child: Text(
                 p.name.isNotEmpty ? p.name[0] : "?",
-                style: TextStyle(color: p.mainColor, fontWeight: FontWeight.bold, fontSize: size * 0.4),
+                style: TextStyle(
+                  color: p.mainColor,
+                  fontWeight: FontWeight.bold,
+                  fontSize: size * 0.4,
+                ),
               ),
             ),
           ),
@@ -164,16 +197,29 @@ class _EggGroupUIState extends State<EggGroupUI> {
           hintText: "搜索精灵名称或图鉴ID",
           hintStyle: const TextStyle(color: Colors.white30),
           prefixIcon: const Icon(Icons.search, color: Colors.white54, size: 20),
-          suffixIcon: _searchController.text.isNotEmpty 
-            ? IconButton(icon: const Icon(Icons.cancel, color: Colors.white24, size: 18), onPressed: () => _searchController.clear())
-            : null,
+          suffixIcon: _searchController.text.isNotEmpty
+              ? IconButton(
+                  icon: const Icon(
+                    Icons.cancel,
+                    color: Colors.white24,
+                    size: 18,
+                  ),
+                  onPressed: () => _searchController.clear(),
+                )
+              : null,
           filled: true,
-          fillColor: Colors.white.withOpacity(0.05),
+          fillColor: Colors.white.withValues(alpha: 0.05),
           contentPadding: const EdgeInsets.symmetric(vertical: 0),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12), 
-            borderSide: BorderSide(color: widget.accentColor.withOpacity(0.5), width: 1)
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: widget.accentColor.withValues(alpha: 0.5),
+              width: 1,
+            ),
           ),
         ),
       ),
@@ -188,18 +234,30 @@ class _EggGroupUIState extends State<EggGroupUI> {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          children: _searchHistory.map((p) => Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ActionChip(
-              label: Text(p.name, style: const TextStyle(fontSize: 10, color: Colors.white60)),
-              backgroundColor: Colors.white.withOpacity(0.05),
-              padding: EdgeInsets.zero,
-              visualDensity: VisualDensity.compact,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-              side: BorderSide.none,
-              onPressed: () => _handleSelectPet(p),
-            ),
-          )).toList(),
+          children: _searchHistory
+              .map(
+                (p) => Padding(
+                  padding: const EdgeInsets.only(right: 8),
+                  child: ActionChip(
+                    label: Text(
+                      p.name,
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.white60,
+                      ),
+                    ),
+                    backgroundColor: Colors.white.withValues(alpha: 0.05),
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    side: BorderSide.none,
+                    onPressed: () => _handleSelectPet(p),
+                  ),
+                ),
+              )
+              .toList(),
         ),
       ),
     );
@@ -214,16 +272,32 @@ class _EggGroupUIState extends State<EggGroupUI> {
         decoration: BoxDecoration(
           color: const Color(0xFF252525),
           borderRadius: BorderRadius.circular(12),
-          boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.5), blurRadius: 10, offset: const Offset(0, 4))],
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.5),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: _searchSuggestions.map((p) => ListTile(
-            dense: true,
-            title: Text(p.name, style: const TextStyle(color: Colors.white, fontSize: 13)),
-            trailing: Text("No.${p.pictorialBookId}", style: const TextStyle(color: Colors.white24, fontSize: 11)),
-            onTap: () => _handleSelectPet(p),
-          )).toList(),
+          children: _searchSuggestions
+              .map(
+                (p) => ListTile(
+                  dense: true,
+                  title: Text(
+                    p.name,
+                    style: const TextStyle(color: Colors.white, fontSize: 13),
+                  ),
+                  trailing: Text(
+                    "No.${p.pictorialBookId}",
+                    style: const TextStyle(color: Colors.white24, fontSize: 11),
+                  ),
+                  onTap: () => _handleSelectPet(p),
+                ),
+              )
+              .toList(),
         ),
       ),
     );
@@ -233,7 +307,7 @@ class _EggGroupUIState extends State<EggGroupUI> {
     final baby = _findBaseForm(_selectedPet!);
     final int gender = _selectedPet!.proportionMale;
     final bool isGenderless = gender == -1;
-    
+
     // 判断是否存在对应性别（10为纯雄，0为纯雌）
     final bool hasFemale = !isGenderless && gender < 10;
     final bool hasMale = !isGenderless && gender > 0;
@@ -245,7 +319,10 @@ class _EggGroupUIState extends State<EggGroupUI> {
       decoration: BoxDecoration(
         color: const Color(0xFF2A2A2A),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: widget.accentColor.withOpacity(0.2), width: 1),
+        border: Border.all(
+          color: widget.accentColor.withValues(alpha: 0.2),
+          width: 1,
+        ),
       ),
       child: Column(
         children: [
@@ -260,15 +337,30 @@ class _EggGroupUIState extends State<EggGroupUI> {
                   Wrap(
                     spacing: 4,
                     runSpacing: 4,
-                    children: _selectedPet!.eggGroup.map((id) => Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
-                      decoration: BoxDecoration(
-                        color: widget.accentColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(_eggGroupNameMap[id] ?? "组$id", 
-                        style: TextStyle(color: widget.accentColor.withOpacity(0.8), fontSize: 9, fontWeight: FontWeight.bold)),
-                    )).toList(),
+                    children: _selectedPet!.eggGroup
+                        .map(
+                          (id) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 1,
+                            ),
+                            decoration: BoxDecoration(
+                              color: widget.accentColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              _eggGroupNameMap[id] ?? "组$id",
+                              style: TextStyle(
+                                color: widget.accentColor.withValues(
+                                  alpha: 0.8,
+                                ),
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ],
               ),
@@ -281,29 +373,60 @@ class _EggGroupUIState extends State<EggGroupUI> {
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(_selectedPet!.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                        Text(
+                          _selectedPet!.name,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
                         const SizedBox(width: 8),
-                        Text("No.${_selectedPet!.pictorialBookId}", style: TextStyle(color: Colors.white.withOpacity(0.2), fontSize: 12)),
+                        Text(
+                          "No.${_selectedPet!.pictorialBookId}",
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.2),
+                            fontSize: 12,
+                          ),
+                        ),
                         const Spacer(),
-                        Text(_getGenderText(gender), style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 11)),
+                        Text(
+                          _getGenderText(gender),
+                          style: TextStyle(
+                            color: Colors.white.withValues(alpha: 0.4),
+                            fontSize: 11,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     if (isGenderless)
                       Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 10,
+                        ),
                         width: double.infinity,
-                        decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.05), borderRadius: BorderRadius.circular(8)),
-                        child: const Text("无性别精灵无法通过常规蛋组繁育", style: TextStyle(color: Colors.redAccent, fontSize: 11)),
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withValues(alpha: 0.05),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Text(
+                          "无性别精灵无法通过常规蛋组繁育",
+                          style: TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 11,
+                          ),
+                        ),
                       )
                     else
                       Row(
                         children: [
                           Expanded(
                             child: _buildInfoBlock(
-                              "作为母方 (♀)", 
-                              "决定子代种类", 
-                              "孵化获得：${baby.name}", 
+                              "作为母方 (♀)",
+                              "决定子代种类",
+                              "孵化获得：${baby.name}",
                               Colors.orangeAccent,
                               Icons.egg_outlined,
                               isEnabled: hasFemale,
@@ -312,9 +435,9 @@ class _EggGroupUIState extends State<EggGroupUI> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: _buildInfoBlock(
-                              "作为父方 (♂)", 
-                              "遗传技能/个体", 
-                              "可提供遗传技能", 
+                              "作为父方 (♂)",
+                              "遗传技能/个体",
+                              "可提供遗传技能",
                               Colors.lightBlueAccent,
                               Icons.auto_awesome,
                               isEnabled: hasMale,
@@ -332,7 +455,14 @@ class _EggGroupUIState extends State<EggGroupUI> {
     );
   }
 
-  Widget _buildInfoBlock(String label, String title, String desc, Color color, IconData icon, {bool isEnabled = true}) {
+  Widget _buildInfoBlock(
+    String label,
+    String title,
+    String desc,
+    Color color,
+    IconData icon, {
+    bool isEnabled = true,
+  }) {
     // 如果不可用，则使用灰色调
     final displayColor = isEnabled ? color : Colors.white24;
     final displayOpacity = isEnabled ? 1.0 : 0.4;
@@ -342,33 +472,59 @@ class _EggGroupUIState extends State<EggGroupUI> {
       child: Container(
         padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
-          color: displayColor.withOpacity(0.05),
+          color: displayColor.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: displayColor.withOpacity(0.1)),
+          border: Border.all(color: displayColor.withValues(alpha: 0.1)),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                Icon(icon, size: 10, color: displayColor.withOpacity(0.7)),
+                Icon(
+                  icon,
+                  size: 10,
+                  color: displayColor.withValues(alpha: 0.7),
+                ),
                 const SizedBox(width: 4),
-                Text(label, style: TextStyle(color: displayColor.withOpacity(0.7), fontSize: 9, fontWeight: FontWeight.bold)),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: displayColor.withValues(alpha: 0.7),
+                    fontSize: 9,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ],
             ),
             const SizedBox(height: 4),
-            Text(title, style: TextStyle(color: displayColor, fontSize: 12, fontWeight: FontWeight.bold)),
-            Text(desc, style: TextStyle(color: displayColor.withOpacity(0.5), fontSize: 9), maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(
+              title,
+              style: TextStyle(
+                color: displayColor,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              desc,
+              style: TextStyle(
+                color: displayColor.withValues(alpha: 0.5),
+                fontSize: 9,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ),
     );
   }
 
-
   Widget _buildResultList() {
     if (_selectedPet == null) return const SizedBox.shrink();
-    final sortedKeys = _groupedResults.keys.toList()..sort((a, b) => b.compareTo(a));
+    final sortedKeys = _groupedResults.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
 
     return CustomScrollView(
       slivers: [
@@ -376,7 +532,9 @@ class _EggGroupUIState extends State<EggGroupUI> {
           List<PetModel> pets = _groupedResults[count]!;
           bool isPerfect = count >= 2;
           bool isExpanded = _expandedStates[count] ?? true;
-          final Color themeColor = isPerfect ? Colors.orangeAccent : Colors.greenAccent;
+          final Color themeColor = isPerfect
+              ? Colors.orangeAccent
+              : Colors.greenAccent;
 
           return SliverMainAxisGroup(
             slivers: [
@@ -392,28 +550,52 @@ class _EggGroupUIState extends State<EggGroupUI> {
                     },
                     child: Container(
                       color: const Color(0xFF1A1A1A), // 必须有背景色遮挡滚动内容
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 4,
+                      ),
                       child: Container(
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        padding: const EdgeInsets.symmetric(
+                          vertical: 8,
+                          horizontal: 12,
+                        ),
                         decoration: BoxDecoration(
-                          color: themeColor.withOpacity(0.1),
+                          color: themeColor.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: themeColor.withOpacity(0.2)),
+                          border: Border.all(
+                            color: themeColor.withValues(alpha: 0.2),
+                          ),
                         ),
                         child: Row(
                           children: [
-                            Icon(isPerfect ? Icons.whatshot : Icons.eco, size: 14, color: themeColor),
+                            Icon(
+                              isPerfect ? Icons.whatshot : Icons.eco,
+                              size: 14,
+                              color: themeColor,
+                            ),
                             const SizedBox(width: 8),
                             Text(
-                              isPerfect ? "完美匹配 (双蛋组重合)" : "基础匹配 (单蛋组重合)", 
-                              style: TextStyle(color: themeColor, fontWeight: FontWeight.bold, fontSize: 12)
+                              isPerfect ? "完美匹配 (双蛋组重合)" : "基础匹配 (单蛋组重合)",
+                              style: TextStyle(
+                                color: themeColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
                             ),
                             const Spacer(),
-                            Text("${pets.length} 只", style: const TextStyle(color: Colors.white24, fontSize: 11)),
+                            Text(
+                              "${pets.length} 只",
+                              style: const TextStyle(
+                                color: Colors.white24,
+                                fontSize: 11,
+                              ),
+                            ),
                             const SizedBox(width: 8),
                             // 添加折叠箭头图标
                             Icon(
-                              isExpanded ? Icons.expand_less : Icons.expand_more,
+                              isExpanded
+                                  ? Icons.expand_less
+                                  : Icons.expand_more,
                               size: 16,
                               color: Colors.white24,
                             ),
@@ -429,28 +611,46 @@ class _EggGroupUIState extends State<EggGroupUI> {
               // 根据展开状态决定是否渲染列表
               if (isExpanded)
                 SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      final p = pets[index];
-                      return ListTile(
-                        dense: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 24, vertical: 0),
-                        onTap: () => _handleSelectPet(p),
-                        leading: _buildPetAvatar(p, size: 36),
-                        title: Text(p.name, style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w500)),
-                        subtitle: Text(
-                          p.eggGroup.map((id) => _eggGroupNameMap[id]).join(' · '), 
-                          style: const TextStyle(color: Colors.white38, fontSize: 10)
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    final p = pets[index];
+                    return ListTile(
+                      dense: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 0,
+                      ),
+                      onTap: () => _handleSelectPet(p),
+                      leading: _buildPetAvatar(p, size: 36),
+                      title: Text(
+                        p.name,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
                         ),
-                        trailing: Text("No.${p.pictorialBookId}", style: const TextStyle(color: Colors.white24, fontSize: 10)),
-                      );
-                    },
-                    childCount: pets.length,
-                  ),
+                      ),
+                      subtitle: Text(
+                        p.eggGroup
+                            .map((id) => _eggGroupNameMap[id])
+                            .join(' · '),
+                        style: const TextStyle(
+                          color: Colors.white38,
+                          fontSize: 10,
+                        ),
+                      ),
+                      trailing: Text(
+                        "No.${p.pictorialBookId}",
+                        style: const TextStyle(
+                          color: Colors.white24,
+                          fontSize: 10,
+                        ),
+                      ),
+                    );
+                  }, childCount: pets.length),
                 )
               else
                 const SliverToBoxAdapter(child: SizedBox.shrink()),
-              
+
               const SliverToBoxAdapter(child: SizedBox(height: 12)),
             ],
           );
@@ -458,7 +658,6 @@ class _EggGroupUIState extends State<EggGroupUI> {
       ],
     );
   }
-
 }
 
 // 辅助类：用于定义吸顶头部的行为
@@ -474,7 +673,11 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   });
 
   @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return SizedBox.expand(child: child);
   }
 
@@ -487,7 +690,7 @@ class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant _SliverHeaderDelegate oldDelegate) {
     return oldDelegate.maxHeight != maxHeight ||
-           oldDelegate.minHeight != minHeight ||
-           oldDelegate.child != child;
+        oldDelegate.minHeight != minHeight ||
+        oldDelegate.child != child;
   }
 }

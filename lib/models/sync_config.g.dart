@@ -26,7 +26,7 @@ const SyncConfigSchema = CollectionSchema(
       id: 1,
       name: r'lastSyncedVersion',
       type: IsarType.long,
-    )
+    ),
   },
   estimateSize: _syncConfigEstimateSize,
   serialize: _syncConfigSerialize,
@@ -44,9 +44,9 @@ const SyncConfigSchema = CollectionSchema(
           name: r'fileName',
           type: IndexType.hash,
           caseSensitive: true,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -166,8 +166,10 @@ extension SyncConfigByIndex on IsarCollection<SyncConfig> {
     return putAllByIndex(r'fileName', objects);
   }
 
-  List<Id> putAllByFileNameSync(List<SyncConfig> objects,
-      {bool saveLinks = true}) {
+  List<Id> putAllByFileNameSync(
+    List<SyncConfig> objects, {
+    bool saveLinks = true,
+  }) {
     return putAllByIndexSync(r'fileName', objects, saveLinks: saveLinks);
   }
 }
@@ -185,10 +187,7 @@ extension SyncConfigQueryWhere
     on QueryBuilder<SyncConfig, SyncConfig, QWhereClause> {
   QueryBuilder<SyncConfig, SyncConfig, QAfterWhereClause> idEqualTo(Id id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: id,
-        upper: id,
-      ));
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
 
@@ -214,8 +213,10 @@ extension SyncConfigQueryWhere
     });
   }
 
-  QueryBuilder<SyncConfig, SyncConfig, QAfterWhereClause> idGreaterThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<SyncConfig, SyncConfig, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: id, includeLower: include),
@@ -223,8 +224,10 @@ extension SyncConfigQueryWhere
     });
   }
 
-  QueryBuilder<SyncConfig, SyncConfig, QAfterWhereClause> idLessThan(Id id,
-      {bool include = false}) {
+  QueryBuilder<SyncConfig, SyncConfig, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: id, includeUpper: include),
@@ -239,56 +242,67 @@ extension SyncConfigQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerId,
-        includeLower: includeLower,
-        upper: upperId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterWhereClause> fileNameEqualTo(
-      String fileName) {
+    String fileName,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'fileName',
-        value: [fileName],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'fileName', value: [fileName]),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterWhereClause> fileNameNotEqualTo(
-      String fileName) {
+    String fileName,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'fileName',
-              lower: [],
-              upper: [fileName],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'fileName',
-              lower: [fileName],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'fileName',
+                lower: [],
+                upper: [fileName],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'fileName',
+                lower: [fileName],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'fileName',
-              lower: [fileName],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'fileName',
-              lower: [],
-              upper: [fileName],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'fileName',
+                lower: [fileName],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'fileName',
+                lower: [],
+                upper: [fileName],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -301,27 +315,31 @@ extension SyncConfigQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'fileName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'fileName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      fileNameGreaterThan(
+  fileNameGreaterThan(
     String value, {
     bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'fileName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'fileName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -331,12 +349,14 @@ extension SyncConfigQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'fileName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'fileName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -348,28 +368,29 @@ extension SyncConfigQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'fileName',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'fileName',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      fileNameStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
+  fileNameStartsWith(String value, {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'fileName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'fileName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -378,65 +399,71 @@ extension SyncConfigQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'fileName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'fileName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition> fileNameContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'fileName',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'fileName',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition> fileNameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'fileName',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'fileName',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      fileNameIsEmpty() {
+  fileNameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'fileName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'fileName', value: ''),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      fileNameIsNotEmpty() {
+  fileNameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'fileName',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'fileName', value: ''),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition> idEqualTo(
-      Id value) {
+    Id value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
@@ -445,11 +472,13 @@ extension SyncConfigQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -458,11 +487,13 @@ extension SyncConfigQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -473,69 +504,70 @@ extension SyncConfigQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      lastSyncedVersionEqualTo(int value) {
+  lastSyncedVersionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastSyncedVersion',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'lastSyncedVersion', value: value),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      lastSyncedVersionGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  lastSyncedVersionGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'lastSyncedVersion',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastSyncedVersion',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      lastSyncedVersionLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  lastSyncedVersionLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'lastSyncedVersion',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastSyncedVersion',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterFilterCondition>
-      lastSyncedVersionBetween(
+  lastSyncedVersionBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'lastSyncedVersion',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastSyncedVersion',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -567,7 +599,7 @@ extension SyncConfigQuerySortBy
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterSortBy>
-      sortByLastSyncedVersionDesc() {
+  sortByLastSyncedVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastSyncedVersion', Sort.desc);
     });
@@ -607,7 +639,7 @@ extension SyncConfigQuerySortThenBy
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QAfterSortBy>
-      thenByLastSyncedVersionDesc() {
+  thenByLastSyncedVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastSyncedVersion', Sort.desc);
     });
@@ -616,15 +648,16 @@ extension SyncConfigQuerySortThenBy
 
 extension SyncConfigQueryWhereDistinct
     on QueryBuilder<SyncConfig, SyncConfig, QDistinct> {
-  QueryBuilder<SyncConfig, SyncConfig, QDistinct> distinctByFileName(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SyncConfig, SyncConfig, QDistinct> distinctByFileName({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'fileName', caseSensitive: caseSensitive);
     });
   }
 
   QueryBuilder<SyncConfig, SyncConfig, QDistinct>
-      distinctByLastSyncedVersion() {
+  distinctByLastSyncedVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastSyncedVersion');
     });

@@ -60,7 +60,9 @@ class _UpdatePetDataUIState extends State<UpdatePetDataUI> {
           if (title.contains('编辑') ||
               title.contains('分类') ||
               title.contains('文件') ||
-              title.contains('模板')) continue;
+              title.contains('模板')) {
+            continue;
+          }
 
           /// 精灵名一般不长
           if (title.length > 6) continue;
@@ -155,79 +157,94 @@ class _UpdatePetDataUIState extends State<UpdatePetDataUI> {
               : GridView.builder(
                   padding: const EdgeInsets.all(8),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4,        
-                    childAspectRatio: 0.75,   //  控制高度
+                    crossAxisCount: 4,
+                    childAspectRatio: 0.75, //  控制高度
                     mainAxisSpacing: 6,
                     crossAxisSpacing: 6,
                   ),
                   itemCount: _petList.length,
-                  
-itemBuilder: (context, index) {
-  final pet = _petList[index];
 
-  final small = pet['img_small'] ?? '';
-  final large = pet['img_large'] ?? '';
-  final name = pet['name'] ?? '';
+                  itemBuilder: (context, index) {
+                    final pet = _petList[index];
 
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(10),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 3,
-          offset: Offset(1, 1),
-        ),
-      ],
-    ),
-    child: Column(
-      children: [
-        /// 图片区域（占主要空间）
-        Expanded(
-          child: ClipRRect(
-            borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
-            child: Container(
-              color: Colors.grey[100],
-              child: Image.network(
-                large,
-                fit: BoxFit.contain,
-                width: double.infinity,
-                loadingBuilder: (context, child, progress) {
-                  if (progress == null) return child;
+                    final small = pet['img_small'] ?? '';
+                    final large = pet['img_large'] ?? '';
+                    final name = pet['name'] ?? '';
 
-                  return small.isNotEmpty
-                      ? Image.network(small, fit: BoxFit.contain)
-                      : const Center(child: CircularProgressIndicator(strokeWidth: 1));
-                },
-                errorBuilder: (c, e, s) {
-                  return small.isNotEmpty
-                      ? Image.network(small, fit: BoxFit.contain)
-                      : const Icon(Icons.pets, size: 30);
-                },
-              ),
-            ),
-          ),
-        ),
+                    return Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black12,
+                            blurRadius: 3,
+                            offset: Offset(1, 1),
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        children: [
+                          /// 图片区域（占主要空间）
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.vertical(
+                                top: Radius.circular(10),
+                              ),
+                              child: Container(
+                                color: Colors.grey[100],
+                                child: Image.network(
+                                  large,
+                                  fit: BoxFit.contain,
+                                  width: double.infinity,
+                                  loadingBuilder: (context, child, progress) {
+                                    if (progress == null) return child;
 
-        /// 名字区域（压缩）
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 4),
-          alignment: Alignment.center,
-          child: Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-}
+                                    return small.isNotEmpty
+                                        ? Image.network(
+                                            small,
+                                            fit: BoxFit.contain,
+                                          )
+                                        : const Center(
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 1,
+                                            ),
+                                          );
+                                  },
+                                  errorBuilder: (c, e, s) {
+                                    return small.isNotEmpty
+                                        ? Image.network(
+                                            small,
+                                            fit: BoxFit.contain,
+                                          )
+                                        : const Icon(Icons.pets, size: 30);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          /// 名字区域（压缩）
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 4,
+                              vertical: 4,
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
                 ),
         ),
       ],

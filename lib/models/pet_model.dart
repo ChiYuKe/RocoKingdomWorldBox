@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart'; 
+import 'package:isar/isar.dart';
+
+import 'json_reader.dart';
 
 part 'pet_model.g.dart';
-
-
-
-
 
 enum PetType {
   ordinary(2, Color(0xFF6198B1), "普通"),
@@ -22,7 +20,7 @@ enum PetType {
   valiant(14, Color.fromARGB(255, 255, 150, 54), "武系"),
   wing(15, Color(0xFF47D1DB), "翼系"),
   cute(16, Color(0xFFFF8093), "萌系"),
-  dark(17, Color(0xFF9D56CF), "幽系"), 
+  dark(17, Color(0xFF9D56CF), "幽系"),
   evil(18, Color.fromARGB(255, 207, 70, 122), "恶系"),
   mechanical(19, Color(0xFF3EC2A1), "机械系"),
   magical(20, Color(0xFFBDA4FA), "幻系");
@@ -169,177 +167,145 @@ class PetModel {
 
   PetModel();
 
-    @enumerated
-    List<PetType> get types => unitType
-        .map((id) => PetType.fromId(id))
-        .whereType<PetType>()
-        .toList();
+  @enumerated
+  List<PetType> get types =>
+      unitType.map((id) => PetType.fromId(id)).whereType<PetType>().toList();
 
+  @ignore
+  Color get mainColor =>
+      types.isNotEmpty ? types.first.themeColor : Colors.grey;
 
-    @ignore   
-    Color get mainColor => types.isNotEmpty ? types.first.themeColor : Colors.grey;
+  @enumerated
+  List<int> get stats => [
+    hpMaxRace, // 生命
+    phyAttackRace, // 物攻
+    speAttackRace, // 魔攻
+    phyDefenceRace, // 物防
+    speDefenceRace, // 魔防
+    speedRace, // 速度
+  ];
 
-    @enumerated
-    List<int> get stats => [
-      hpMaxRace, // 生命
-      phyAttackRace, // 物攻
-      speAttackRace, // 魔攻
-      phyDefenceRace, // 物防
-      speDefenceRace, // 魔防
-      speedRace, // 速度
-    ];
-
-    @ignore
-    List<String> get evolutions => [ "3001", "3002", "3003"
-    ];
-
-
-
-
-
-
+  @ignore
+  List<String> get evolutions => ["3001", "3002", "3003"];
 
   factory PetModel.fromJson(Map<String, dynamic> json) {
-    // 内部辅助函数：安全转 int
-    int asInt(dynamic value) {
-      if (value == null) return 0;
-      if (value is int) return value;
-      if (value is num) return value.toInt();
-      if (value is String) return int.tryParse(value) ?? 0;
-      return 0;
-    }
-
-    // 内部辅助函数：安全转 double
-    double asDouble(dynamic value) {
-      if (value == null) return 0.0;
-      if (value is num) return value.toDouble();
-      if (value is String) return double.tryParse(value) ?? 0.0;
-      return 0.0;
-    }
-
-    // 内部辅助函数：安全转 String
-    String asStr(dynamic value) {
-      if (value == null) return '';
-      return value.toString();
-    }
-
     return PetModel()
-      ..id = asInt(json['id'])
-      ..lastSyncedVersion = asInt(json['lastSyncedVersion'])
-      ..name = asStr(json['name'])
-      ..bossType = asInt(json['boss_type'])
-      ..moveType = asStr(json['move_type'])
-      ..completeness = asInt(json['completeness'])
-      ..petEvolutionId = json['pet_evolution_id'] != null ? List<int>.from(json['pet_evolution_id'].map((x) => asInt(x))) : []
-      ..quality = asInt(json['quality'])
-      ..stengthStage = asInt(json['stength_stage'])
-      ..stage = asInt(json['stage'])
-      ..petScroe = asInt(json['pet_scroe'])
-      ..consumeRoleHp = asInt(json['consume_role_hp'])
-      ..maxEnergy = asInt(json['max_energy'])
-      ..unitType = json['unit_type'] != null ? List<int>.from(json['unit_type'].map((x) => asInt(x))) : []
-      ..showTag = asInt(json['show_tag'])
-      ..aiGroupInfoId = asInt(json['ai_group_info_id'])
-      ..petHabitatGroupRoleType = asInt(json['pet_habitat_group_role_type'])
-      ..ecologyFeature = json['ecology_feature'] != null ? List<int>.from(json['ecology_feature'].map((x) => asInt(x))) : []
-      ..levelSkillConfId = asInt(json['level_skill_conf_id'])
-      ..petFeature = asInt(json['pet_feature'])
-      ..petChaosFeature = asInt(json['pet_chaos_feature'])
-      ..petGlassFeature = asInt(json['pet_glass_feature'])
-      ..petIdleSkill = asInt(json['pet_idle_skill'])
-      ..petLackenergySkill = asInt(json['pet_lackenergy_skill'])
-      ..modelConf = asInt(json['model_conf'])
-      ..description = asStr(json['description'])
-      ..petScale = asDouble(json['pet_scale'])
-      ..pictorialBookId = asInt(json['pictorial_book_id'])
-      ..petfreeSort = asInt(json['petfree_sort'])
-      ..petBondId = asInt(json['pet_bond_id'])
-      ..petReaction = json['pet_reaction'] != null ? List<int>.from(json['pet_reaction'].map((x) => asInt(x))) : []
-      ..evolutionPetId = json['evolution_pet_id'] != null ? List<int>.from(json['evolution_pet_id'].map((x) => asInt(x))) : []
-      ..bosspetbaseId = asInt(json['bosspetbase_id'])
-      ..bosspetbaseIdArry = json['bosspetbase_id_arry'] != null ? List<int>.from(json['bosspetbase_id_arry'].map((x) => asInt(x))) : []
-      ..basePointLimit = asInt(json['base_point_limit'])
-      ..proportionMale = asInt(json['proportion_male'])
-      ..natureIds = json['nature_ids'] != null ? List<int>.from(json['nature_ids'].map((x) => asInt(x))) : []
-      ..hpMaxRace = asInt(json['hp_max_race'])
-      ..phyAttackRace = asInt(json['phy_attack_race'])
-      ..speAttackRace = asInt(json['spe_attack_race'])
-      ..phyDefenceRace = asInt(json['phy_defence_race'])
-      ..speDefenceRace = asInt(json['spe_defence_race'])
-      ..speedRace = asInt(json['speed_race'])
-      ..sumRace = asInt(json['SUM_race'])
-      ..hpMaxFirst = asInt(json['hp_max_first'])
-      ..phyAttackFirst = asInt(json['phy_attack_first'])
-      ..speAttackFirst = asInt(json['spe_attack_first'])
-      ..phyDefenceFirst = asInt(json['phy_defence_first'])
-      ..speDefenceFirst = asInt(json['spe_defence_first'])
-      ..speedFirst = asInt(json['speed_first'])
-      ..criticalDam = asInt(json['critical_dam'])
-      ..grassEnhance = asInt(json['grass_enhance'])
-      ..basePointType = asInt(json['base_point_type'])
-      ..petUiCameraType = asInt(json['pet_ui_camera_type'])
-      ..petpageUiPercentage = asDouble(json['petpage_ui_percentage'])
-      ..petpageCapsuleOffset = json['petpage_capsule_offset'] != null ? List<double>.from(json['petpage_capsule_offset'].map((x) => asDouble(x))) : []
-      ..handbookUiPercentage = asDouble(json['handbook_ui_percentage'])
-      ..handbookCapsuleOffset = json['handbook_capsule_offset'] != null ? List<double>.from(json['handbook_capsule_offset'].map((x) => asDouble(x))) : []
-      ..petUiPercentage = asDouble(json['pet_ui_percentage'])
-      ..formationUiScale = asDouble(json['formation_ui_scale'])
-      ..uiCameraOffset = json['ui_camera_offset'] != null ? List<double>.from(json['ui_camera_offset'].map((x) => asDouble(x))) : []
-      ..modelHeight = asDouble(json['model_height'])
-      ..showArea = asInt(json['show_area'])
-      ..npcId = asInt(json['npc_id'])
-      ..worldNature = asInt(json['world_nature'])
-      ..substituteCharacter = asInt(json['substitute_character'])
-      ..substituteRandomSkill = asInt(json['substitute_random_skill'])
-      ..catchThresholdBonustime = asInt(json['Catch_Threshold_Bonustime'])
-      ..catchThresholdBonus = asInt(json['Catch_Threshold_Bonus'])
-      ..weightLow = asInt(json['weight_low'])
-      ..weightHigh = asInt(json['weight_high'])
-      ..heightLow = asInt(json['height_low'])
-      ..heightHigh = asInt(json['height_high'])
-      ..petClassisId = asInt(json['pet_classis_id'])
-      ..breakAwardSort = asInt(json['break_award_sort'])
-      ..enjoyFieldType = json['enjoy_field_type'] != null ? List<int>.from(json['enjoy_field_type'].map((x) => asInt(x))) : []
-      ..hateFieldType = json['hate_field_type'] != null ? List<int>.from(json['hate_field_type'].map((x) => asInt(x))) : []
-      ..petSettledBasicReward = asInt(json['pet_settled_basic_reward'])
-      ..growXIndividuality = asInt(json['grow_x_individuality'])
-      ..individualityLowerLimit = asInt(json['individuality_lower_limit'])
-      ..individualityUpperLimit = asInt(json['individuality_upper_limit'])
-      ..jlRes = asStr(json['JL_res'])
-      ..jlSmallRes = asStr(json['JL_small_res'])
-      ..resUiPercentage = asDouble(json['res_ui_percentage'])
-      ..resOffset = json['res_offset'] != null ? List<double>.from(json['res_offset'].map((x) => asDouble(x))) : []
-      ..shadowUiPercentage = json['shadow_ui_percentage'] != null ? List<double>.from(json['shadow_ui_percentage'].map((x) => asDouble(x))) : []
-      ..shadowOffset = json['shadow_offset'] != null ? List<double>.from(json['shadow_offset'].map((x) => asDouble(x))) : []
-      ..shadowAngle = json['shadow_angle'] != null ? List<double>.from(json['shadow_angle'].map((x) => asDouble(x))) : []
-      ..shadowOpacity = asDouble(json['shadow_opacity'])
-      ..handbookStandpaintBg = asStr(json['handbook_standpaint_bg'])
-      ..handbookUnknownBg = asStr(json['handbook_unknown_bg'])
-      ..shareBg = asStr(json['share_bg'])
-      ..shareUncommonCardFg = asStr(json['share_uncommon_card_fg'])
-      ..shareUncommonCardBg = asStr(json['share_uncommon_card_bg'])
-      ..habit1 = asStr(json['habit_1'])
-      ..petEgg = asInt(json['pet_egg'])
-      ..eggGroup = json['egg_group'] != null ? List<int>.from(json['egg_group'].map((x) => asInt(x))) : []
-      ..axialDensity = asInt(json['axial_density'])
-      ..radialDensity = asInt(json['radial_density'])
-      ..teamBattleAi = asInt(json['team_battle_ai'])
-      ..weightCompensation = asDouble(json['weight_compensation'])
-      ..talentNormalChance = asInt(json['talent_normal_chance'])
-      ..talentGoodChance = asInt(json['talent_good_chance'])
-      ..talentAmazingChance = asInt(json['talent_amazing_chance'])
-      ..talentPerfectChance = asInt(json['talent_perfect_chance'])
-      ..petTrackNpcId = json['pet_track_npc_id'] != null ? List<int>.from(json['pet_track_npc_id'].map((x) => asInt(x))) : []
-      ..petTrackFailDesc = asStr(json['pet_track_fail_desc'])
-      ..homeNpcId = asInt(json['home_npc_id'])
-      ..wishNumber = asInt(json['wish_number'])
-      ..reportResUiPercentage = asDouble(json['report_res_ui_percentage'])
-      ..reportResOffset = json['report_res_offset'] != null ? List<double>.from(json['report_res_offset'].map((x) => asDouble(x))) : []
-      ..cardResUiPercentage = asDouble(json['card_res_ui_percentage'])
-      ..cardResOffset = json['card_res_offset'] != null ? List<double>.from(json['card_res_offset'].map((x) => asDouble(x))) : []
-      ..talentRandomId = asInt(json['talent_random_id'])
-      ..audioConfigId = asInt(json['audio_config_id'])
-      ..fallingResistance = asInt(json['falling_resistance'])
-      ..customGlassEggPiece = asInt(json['custom_glass_egg_piece']);
+      ..id = json.intValue('id')
+      ..lastSyncedVersion = json.intValue('lastSyncedVersion')
+      ..name = json.stringValue('name')
+      ..bossType = json.intValue('boss_type')
+      ..moveType = json.stringValue('move_type')
+      ..completeness = json.intValue('completeness')
+      ..petEvolutionId = json.intListValue('pet_evolution_id')
+      ..quality = json.intValue('quality')
+      ..stengthStage = json.intValue('stength_stage')
+      ..stage = json.intValue('stage')
+      ..petScroe = json.intValue('pet_scroe')
+      ..consumeRoleHp = json.intValue('consume_role_hp')
+      ..maxEnergy = json.intValue('max_energy')
+      ..unitType = json.intListValue('unit_type')
+      ..showTag = json.intValue('show_tag')
+      ..aiGroupInfoId = json.intValue('ai_group_info_id')
+      ..petHabitatGroupRoleType = json.intValue('pet_habitat_group_role_type')
+      ..ecologyFeature = json.intListValue('ecology_feature')
+      ..levelSkillConfId = json.intValue('level_skill_conf_id')
+      ..petFeature = json.intValue('pet_feature')
+      ..petChaosFeature = json.intValue('pet_chaos_feature')
+      ..petGlassFeature = json.intValue('pet_glass_feature')
+      ..petIdleSkill = json.intValue('pet_idle_skill')
+      ..petLackenergySkill = json.intValue('pet_lackenergy_skill')
+      ..modelConf = json.intValue('model_conf')
+      ..description = json.stringValue('description')
+      ..petScale = json.doubleValue('pet_scale')
+      ..pictorialBookId = json.intValue('pictorial_book_id')
+      ..petfreeSort = json.intValue('petfree_sort')
+      ..petBondId = json.intValue('pet_bond_id')
+      ..petReaction = json.intListValue('pet_reaction')
+      ..evolutionPetId = json.intListValue('evolution_pet_id')
+      ..bosspetbaseId = json.intValue('bosspetbase_id')
+      ..bosspetbaseIdArry = json.intListValue('bosspetbase_id_arry')
+      ..basePointLimit = json.intValue('base_point_limit')
+      ..proportionMale = json.intValue('proportion_male')
+      ..natureIds = json.intListValue('nature_ids')
+      ..hpMaxRace = json.intValue('hp_max_race')
+      ..phyAttackRace = json.intValue('phy_attack_race')
+      ..speAttackRace = json.intValue('spe_attack_race')
+      ..phyDefenceRace = json.intValue('phy_defence_race')
+      ..speDefenceRace = json.intValue('spe_defence_race')
+      ..speedRace = json.intValue('speed_race')
+      ..sumRace = json.intValue('SUM_race')
+      ..hpMaxFirst = json.intValue('hp_max_first')
+      ..phyAttackFirst = json.intValue('phy_attack_first')
+      ..speAttackFirst = json.intValue('spe_attack_first')
+      ..phyDefenceFirst = json.intValue('phy_defence_first')
+      ..speDefenceFirst = json.intValue('spe_defence_first')
+      ..speedFirst = json.intValue('speed_first')
+      ..criticalDam = json.intValue('critical_dam')
+      ..grassEnhance = json.intValue('grass_enhance')
+      ..basePointType = json.intValue('base_point_type')
+      ..petUiCameraType = json.intValue('pet_ui_camera_type')
+      ..petpageUiPercentage = json.doubleValue('petpage_ui_percentage')
+      ..petpageCapsuleOffset = json.doubleListValue('petpage_capsule_offset')
+      ..handbookUiPercentage = json.doubleValue('handbook_ui_percentage')
+      ..handbookCapsuleOffset = json.doubleListValue('handbook_capsule_offset')
+      ..petUiPercentage = json.doubleValue('pet_ui_percentage')
+      ..formationUiScale = json.doubleValue('formation_ui_scale')
+      ..uiCameraOffset = json.doubleListValue('ui_camera_offset')
+      ..modelHeight = json.doubleValue('model_height')
+      ..showArea = json.intValue('show_area')
+      ..npcId = json.intValue('npc_id')
+      ..worldNature = json.intValue('world_nature')
+      ..substituteCharacter = json.intValue('substitute_character')
+      ..substituteRandomSkill = json.intValue('substitute_random_skill')
+      ..catchThresholdBonustime = json.intValue('Catch_Threshold_Bonustime')
+      ..catchThresholdBonus = json.intValue('Catch_Threshold_Bonus')
+      ..weightLow = json.intValue('weight_low')
+      ..weightHigh = json.intValue('weight_high')
+      ..heightLow = json.intValue('height_low')
+      ..heightHigh = json.intValue('height_high')
+      ..petClassisId = json.intValue('pet_classis_id')
+      ..breakAwardSort = json.intValue('break_award_sort')
+      ..enjoyFieldType = json.intListValue('enjoy_field_type')
+      ..hateFieldType = json.intListValue('hate_field_type')
+      ..petSettledBasicReward = json.intValue('pet_settled_basic_reward')
+      ..growXIndividuality = json.intValue('grow_x_individuality')
+      ..individualityLowerLimit = json.intValue('individuality_lower_limit')
+      ..individualityUpperLimit = json.intValue('individuality_upper_limit')
+      ..jlRes = json.stringValue('JL_res')
+      ..jlSmallRes = json.stringValue('JL_small_res')
+      ..resUiPercentage = json.doubleValue('res_ui_percentage')
+      ..resOffset = json.doubleListValue('res_offset')
+      ..shadowUiPercentage = json.doubleListValue('shadow_ui_percentage')
+      ..shadowOffset = json.doubleListValue('shadow_offset')
+      ..shadowAngle = json.doubleListValue('shadow_angle')
+      ..shadowOpacity = json.doubleValue('shadow_opacity')
+      ..handbookStandpaintBg = json.stringValue('handbook_standpaint_bg')
+      ..handbookUnknownBg = json.stringValue('handbook_unknown_bg')
+      ..shareBg = json.stringValue('share_bg')
+      ..shareUncommonCardFg = json.stringValue('share_uncommon_card_fg')
+      ..shareUncommonCardBg = json.stringValue('share_uncommon_card_bg')
+      ..habit1 = json.stringValue('habit_1')
+      ..petEgg = json.intValue('pet_egg')
+      ..eggGroup = json.intListValue('egg_group')
+      ..axialDensity = json.intValue('axial_density')
+      ..radialDensity = json.intValue('radial_density')
+      ..teamBattleAi = json.intValue('team_battle_ai')
+      ..weightCompensation = json.doubleValue('weight_compensation')
+      ..talentNormalChance = json.intValue('talent_normal_chance')
+      ..talentGoodChance = json.intValue('talent_good_chance')
+      ..talentAmazingChance = json.intValue('talent_amazing_chance')
+      ..talentPerfectChance = json.intValue('talent_perfect_chance')
+      ..petTrackNpcId = json.intListValue('pet_track_npc_id')
+      ..petTrackFailDesc = json.stringValue('pet_track_fail_desc')
+      ..homeNpcId = json.intValue('home_npc_id')
+      ..wishNumber = json.intValue('wish_number')
+      ..reportResUiPercentage = json.doubleValue('report_res_ui_percentage')
+      ..reportResOffset = json.doubleListValue('report_res_offset')
+      ..cardResUiPercentage = json.doubleValue('card_res_ui_percentage')
+      ..cardResOffset = json.doubleListValue('card_res_offset')
+      ..talentRandomId = json.intValue('talent_random_id')
+      ..audioConfigId = json.intValue('audio_config_id')
+      ..fallingResistance = json.intValue('falling_resistance')
+      ..customGlassEggPiece = json.intValue('custom_glass_egg_piece');
   }
 }

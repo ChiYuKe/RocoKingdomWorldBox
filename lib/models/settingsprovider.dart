@@ -3,12 +3,15 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/pet_model.dart';
 
 class SettingsProvider with ChangeNotifier {
+  static const _defaultColorIntensity = 0.9;
+  static const _defaultSelectedType = PetType.cute;
+
   late SharedPreferences _prefs;
 
   // 默认值
   bool _isColorLocked = false; // 是否锁定颜色
-  PetType _selectedType = PetType.cute;  // 默认宠物类型
-  double _colorIntensity = 0.9; // 颜色强度，范围0.0-1.0
+  PetType _selectedType = _defaultSelectedType; // 默认宠物类型
+  double _colorIntensity = _defaultColorIntensity; // 颜色强度，范围0.0-1.0
   bool _hdPortrait = true; // 是否使用高清头像
 
   // Getter
@@ -21,13 +24,18 @@ class SettingsProvider with ChangeNotifier {
   Future<void> init() async {
     _prefs = await SharedPreferences.getInstance();
     _isColorLocked = _prefs.getBool('isColorLocked') ?? false;
-    _colorIntensity = _prefs.getDouble('colorIntensity') ?? 0.9;
+    _colorIntensity =
+        (_prefs.getDouble('colorIntensity') ?? _defaultColorIntensity).clamp(
+          0.0,
+          1.0,
+        );
     _hdPortrait = _prefs.getBool('hdPortrait') ?? true;
-    
+
     // 加载 PetType (存储其 index)
-    int typeIndex = _prefs.getInt('selectedTypeIndex') ?? 13; // 默认为 cute 类型的 index
-    _selectedType = PetType.values[typeIndex];
-    
+    final typeIndex =
+        _prefs.getInt('selectedTypeIndex') ?? _defaultSelectedType.index;
+    _selectedType = _typeFromIndex(typeIndex);
+
     notifyListeners();
   }
 
@@ -45,8 +53,8 @@ class SettingsProvider with ChangeNotifier {
   }
 
   void setColorIntensity(double value) {
-    _colorIntensity = value;
-    _prefs.setDouble('colorIntensity', value);
+    _colorIntensity = value.clamp(0.0, 1.0);
+    _prefs.setDouble('colorIntensity', _colorIntensity);
     notifyListeners();
   }
 
@@ -60,5 +68,13 @@ class SettingsProvider with ChangeNotifier {
   Future<void> resetSettings() async {
     await _prefs.clear();
     await init();
+  }
+
+  PetType _typeFromIndex(int index) {
+    if (index < 0 || index >= PetType.values.length) {
+      return _defaultSelectedType;
+    }
+
+    return PetType.values[index];
   }
 }

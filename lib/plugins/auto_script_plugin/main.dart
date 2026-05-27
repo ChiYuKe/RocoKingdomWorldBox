@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../models/plugin_interface.dart';
-import '../../widgets/plugin_page_template.dart'; 
+import '../../widgets/plugin_page_template.dart';
 import 'widgets/auto_script_ui.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class AutoScriptPlugin implements RocoPlugin {
-  
   @override
   String get id => "com.roco.plugin.auto_script";
   @override
@@ -19,10 +18,10 @@ class AutoScriptPlugin implements RocoPlugin {
   String get author => "ChiYuKe";
 
   @override
-  bool get isLocked => true; 
+  bool get isLocked => true;
 
   @override
-  String get correctKey => dotenv.env['PLUGIN_AUTO_KEY'] ?? "default_key"; 
+  String get correctKey => dotenv.env['PLUGIN_AUTO_KEY'] ?? "default_key";
 
   @override
   Widget buildIcon(BuildContext context, Color accentColor) {
@@ -33,11 +32,9 @@ class AutoScriptPlugin implements RocoPlugin {
   Widget buildEntryPage(BuildContext context, Color accentColor) {
     return PluginPageTemplate(
       title: name,
-      subTitle: description, 
+      subTitle: description,
       accentColor: accentColor,
-      body: AutoScriptUI(
-        accentColor: accentColor,
-      ),
+      body: AutoScriptUI(accentColor: accentColor),
     );
   }
 }

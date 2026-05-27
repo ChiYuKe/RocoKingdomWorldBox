@@ -22,9 +22,9 @@ class CalcPlugin implements RocoPlugin {
   String get author => "ChiYuKe";
 
   @override
-  bool get isLocked => false; 
+  bool get isLocked => false;
   @override
-  String get correctKey => dotenv.env['PLUGIN_KEY'] ?? "default_key";  
+  String get correctKey => dotenv.env['PLUGIN_KEY'] ?? "default_key";
 
   @override
   Widget buildIcon(BuildContext context, Color accentColor) {
@@ -36,7 +36,7 @@ class CalcPlugin implements RocoPlugin {
     // 使用通用模板包装私有 UI
     return PluginPageTemplate(
       title: name,
-      subTitle: description, 
+      subTitle: description,
       accentColor: accentColor,
       body: ContrastUI(
         accentColor: accentColor,

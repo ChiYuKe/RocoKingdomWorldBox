@@ -1,35 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:convert';
-import 'package:flutter/services.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:window_manager/window_manager.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'models/skill_model.dart';
-import 'models/chat_message.dart';
 import 'tabs/pokedex_tab.dart';
 import 'tabs/settings_tab.dart';
 import 'tabs/hub_tab.dart';
 import 'tabs/plugins_tab.dart';
+import 'models/pet_catalog.dart';
 import 'models/plugin_interface.dart';
-import 'plugins/calc_plugin/main.dart' as calc;
-import 'plugins/update_pet_data_plugin/main.dart' as update_pet_data;
-import 'plugins/auto_script_plugin/main.dart' as auto_script;
-import 'plugins/egg_group_plugin/main.dart' as egg_group;
 import 'models/settingsprovider.dart';
+import 'plugins/plugin_registry.dart';
+import 'services/app_config.dart';
+import 'services/app_database.dart';
 import 'services/data_sync_service.dart';
 import 'models/pet_model.dart';
 import 'tabs/map_tab.dart';
-import 'models/sync_config.dart';
-import 'models/pet_evolution.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await windowManager.ensureInitialized();
 
-  WindowOptions windowOptions = const WindowOptions(
+  const windowOptions = WindowOptions(
     size: Size(1280, 720),
     minimumSize: Size(1280, 720),
     center: true,
@@ -47,21 +38,12 @@ Future<void> main() async {
   final settings = SettingsProvider();
   await settings.init();
 
-  try {
-    await dotenv.load(fileName: ".env");
-  } catch (e) {
-    debugPrint("Env Load Error: $e");
-  }
+  const appConfig = AppConfig();
+  await appConfig.loadEnvironment();
+  await appConfig.initializeSupabase();
 
-  await Supabase.initialize(
-    url: dotenv.env['SUPABASE_URL'] ?? "default_url",
-    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? "default_anon_key", 
-  );
-
-
-  runApp(RocoPokedexApp(settings: settings)); 
+  runApp(RocoPokedexApp(settings: settings));
 }
-
 
 class RocoPokedexApp extends StatelessWidget {
   final SettingsProvider settings;
@@ -94,19 +76,20 @@ class MainScaffold extends StatefulWidget {
   State<MainScaffold> createState() => _MainScaffoldState();
 }
 
-
-
 class _MainScaffoldState extends State<MainScaffold> with WindowListener {
   late Isar _isar;
-  List<PetModel> _pictorialBookId = [];
+  final AppDatabase _database = const AppDatabase();
+  final PluginRegistry _pluginRegistry = const PluginRegistry();
+  PetCatalog _petCatalog = const PetCatalog(pets: [], groups: []);
   List<RocoPlugin> _plugins = [];
   bool _isLoading = true;
+  String? _initializationError;
   final GlobalKey<HubTabState> _chatTabKey = GlobalKey<HubTabState>();
 
   int _currentTab = 0;
   int _selectedIndex = 0;
   bool _isMaximized = false;
-  bool _isAlwaysOnTop = false; // 置顶状态跟踪
+  bool _isAlwaysOnTop = false;
 
   @override
   void initState() {
@@ -141,38 +124,28 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
 
   Future<void> _initApp() async {
     try {
-      final dir = await getApplicationDocumentsDirectory();
-      
-      _isar = Isar.getInstance() ?? await Isar.open(
-        [
-          SkillModelSchema,
-          ChatMessageSchema,
-          PetModelSchema,
-          SyncConfigSchema,
-          PetEvolutionSchema,
-        ], 
-        directory: dir.path
-      );
+      _isar = await _database.open();
 
       final syncService = DataSyncService(_isar);
       await syncService.runAllSync();
 
       final allPets = await _isar.petModels.where().findAll();
-      
+
       if (mounted) {
         setState(() {
-          _pictorialBookId = allPets;
-          _plugins = [
-            calc.CalcPlugin(pictorialBookId: _pictorialBookId),
-            update_pet_data.UpdatePetDataPlugin(),
-            auto_script.AutoScriptPlugin(),
-            egg_group.EggGroupPlugin(allPets: _pictorialBookId),
-          ];
+          _petCatalog = PetCatalog.fromPets(allPets);
+          _plugins = _pluginRegistry.buildPlugins(_petCatalog.pets);
           _isLoading = false;
         });
       }
     } catch (e) {
       debugPrint("Initialization Error: $e");
+      if (mounted) {
+        setState(() {
+          _initializationError = e.toString();
+          _isLoading = false;
+        });
+      }
     }
   }
 
@@ -181,13 +154,15 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
     if (settings.isColorLocked) {
       return settings.selectedType.themeColor;
     }
-    
-    if (_pictorialBookId.isEmpty || _selectedIndex >= _pictorialBookId.length) {
-      return Colors.blue; 
+
+    final selectedPet = _petCatalog.petAt(_selectedIndex);
+    if (selectedPet == null) {
+      return Colors.blue;
     }
-    
-    final currentPet = _pictorialBookId[_selectedIndex];
-    return currentPet.types.isNotEmpty ? currentPet.types[0].themeColor : Colors.blue;
+
+    return selectedPet.types.isNotEmpty
+        ? selectedPet.types[0].themeColor
+        : Colors.blue;
   }
 
   @override
@@ -195,16 +170,33 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
     if (_isLoading) {
       return const Scaffold(
         backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)),
+        body: Center(
+          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+        ),
+      );
+    }
+
+    if (_initializationError != null) {
+      return AppInitializationError(
+        message: _initializationError!,
+        onRetry: () {
+          setState(() {
+            _initializationError = null;
+            _isLoading = true;
+          });
+          _initApp();
+        },
       );
     }
 
     final Color currentEffectiveColor = _getCurrentThemeColor();
-    final Color backgroundColor = Color.lerp(
-      const Color(0xFF000000),
-      currentEffectiveColor,
-      widget.settings.colorIntensity,
-    ) ?? Colors.black;
+    final Color backgroundColor =
+        Color.lerp(
+          const Color(0xFF000000),
+          currentEffectiveColor,
+          widget.settings.colorIntensity,
+        ) ??
+        Colors.black;
 
     return Scaffold(
       body: Stack(
@@ -220,14 +212,20 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
               _buildNavigationRail(currentEffectiveColor),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(top: 33, right: 12, bottom: 12), 
+                  padding: const EdgeInsets.only(
+                    top: 33,
+                    right: 12,
+                    bottom: 12,
+                  ),
                   child: _buildIndexedTabContent(currentEffectiveColor),
                 ),
               ),
             ],
           ),
           Positioned(
-            top: 0, left: 0, right: 0,
+            top: 0,
+            left: 0,
+            right: 0,
             child: _buildTopTitleBar(currentEffectiveColor),
           ),
         ],
@@ -239,8 +237,13 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
     return Container(
       height: 33,
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.1),
-        border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.05), width: 0.5)),
+        color: Colors.black.withValues(alpha: 0.1),
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.white.withValues(alpha: 0.05),
+            width: 0.5,
+          ),
+        ),
       ),
       child: Row(
         children: [
@@ -266,9 +269,8 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
   Widget _buildWindowControls(Color accentColor) {
     return Row(
       children: [
-        // 置顶按钮：根据 _isAlwaysOnTop 切换图标和样式
         WindowBtn(
-          icon: _isAlwaysOnTop ? Icons.push_pin : Icons.push_pin_outlined, 
+          icon: _isAlwaysOnTop ? Icons.push_pin : Icons.push_pin_outlined,
           onTap: _toggleAlwaysOnTop,
           isActive: _isAlwaysOnTop,
           activeColor: accentColor,
@@ -284,7 +286,11 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
             }
           },
         ),
-        WindowBtn(icon: Icons.close, onTap: () => windowManager.close(), isClose: true),
+        WindowBtn(
+          icon: Icons.close,
+          onTap: () => windowManager.close(),
+          isClose: true,
+        ),
       ],
     );
   }
@@ -294,22 +300,15 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
       index: _currentTab,
       children: [
         PokedexTab(
-          pictorialBookId: _pictorialBookId,
+          catalog: _petCatalog,
           selectedIndex: _selectedIndex,
           onSelected: (index) => setState(() => _selectedIndex = index),
           accentColor: accentColor,
         ),
-        HubTab(
-          key: _chatTabKey, 
-          accentColor: accentColor,
-          isar: _isar,
-        ),
+        HubTab(key: _chatTabKey, accentColor: accentColor, isar: _isar),
         MapTab(plugins: _plugins, accentColor: accentColor),
         PluginsTab(plugins: _plugins, accentColor: accentColor),
-        SettingsTab(
-          accentColor: accentColor,
-          settings: widget.settings,
-        ),
+        SettingsTab(accentColor: accentColor, settings: widget.settings),
       ],
     );
   }
@@ -335,9 +334,9 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
       decoration: BoxDecoration(
-        color: Colors.black.withOpacity(0.3),
+        color: Colors.black.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.05)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -356,10 +355,15 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
     );
   }
 
-  Widget _buildNavBtn(int index, IconData icon, String label, Color accentColor) {
+  Widget _buildNavBtn(
+    int index,
+    IconData icon,
+    String label,
+    Color accentColor,
+  ) {
     final bool isSelected = _currentTab == index;
     return GestureDetector(
-      onTap: () { 
+      onTap: () {
         if (_currentTab == index) return;
         setState(() => _currentTab = index);
         if (index == 1) {
@@ -372,13 +376,19 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
         width: 60,
         padding: const EdgeInsets.symmetric(vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? accentColor.withOpacity(0.9) : Colors.transparent,
+          color: isSelected
+              ? accentColor.withValues(alpha: 0.9)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(18),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: isSelected ? Colors.white : Colors.white30, size: 22),
+            Icon(
+              icon,
+              color: isSelected ? Colors.white : Colors.white30,
+              size: 22,
+            ),
             const SizedBox(height: 4),
             Text(
               label,
@@ -395,6 +405,59 @@ class _MainScaffoldState extends State<MainScaffold> with WindowListener {
   }
 }
 
+class AppInitializationError extends StatelessWidget {
+  final String message;
+  final VoidCallback onRetry;
+
+  const AppInitializationError({
+    super.key,
+    required this.message,
+    required this.onRetry,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(
+                  Icons.error_outline_rounded,
+                  color: Colors.redAccent,
+                  size: 42,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  '应用初始化失败',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.white60, fontSize: 13),
+                ),
+                const SizedBox(height: 20),
+                FilledButton(onPressed: onRetry, child: const Text('重试')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class WindowBtn extends StatefulWidget {
   final IconData icon;
   final VoidCallback onTap;
@@ -403,9 +466,9 @@ class WindowBtn extends StatefulWidget {
   final Color? activeColor;
 
   const WindowBtn({
-    super.key, 
-    required this.icon, 
-    required this.onTap, 
+    super.key,
+    required this.icon,
+    required this.onTap,
     this.isClose = false,
     this.isActive = false,
     this.activeColor,
@@ -433,15 +496,22 @@ class _WindowBtnState extends State<WindowBtn> {
           height: 33,
           decoration: BoxDecoration(
             color: _isHovered
-                ? (widget.isClose ? Colors.red.withOpacity(0.8) : Colors.white.withOpacity(0.1))
-                : (widget.isActive ? (widget.activeColor?.withOpacity(0.2) ?? Colors.white10) : Colors.transparent),
+                ? (widget.isClose
+                      ? Colors.red.withValues(alpha: 0.8)
+                      : Colors.white.withValues(alpha: 0.1))
+                : (widget.isActive
+                      ? (widget.activeColor?.withValues(alpha: 0.2) ??
+                            Colors.white10)
+                      : Colors.transparent),
           ),
           child: Center(
             child: Icon(
               widget.icon,
-              color: widget.isActive 
+              color: widget.isActive
                   ? (widget.activeColor ?? Colors.white)
-                  : (_isHovered ? Colors.white : Colors.white.withOpacity(0.6)),
+                  : (_isHovered
+                        ? Colors.white
+                        : Colors.white.withValues(alpha: 0.6)),
               size: widget.icon == Icons.filter_none ? 12 : 16,
             ),
           ),

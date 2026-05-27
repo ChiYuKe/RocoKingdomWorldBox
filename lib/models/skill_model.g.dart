@@ -37,46 +37,22 @@ const SkillModelSchema = CollectionSchema(
       name: r'damageType',
       type: IsarType.long,
     ),
-    r'desc': PropertySchema(
-      id: 4,
-      name: r'desc',
-      type: IsarType.string,
-    ),
+    r'desc': PropertySchema(id: 4, name: r'desc', type: IsarType.string),
     r'energyCost': PropertySchema(
       id: 5,
       name: r'energyCost',
       type: IsarType.longList,
     ),
-    r'hitPara': PropertySchema(
-      id: 6,
-      name: r'hitPara',
-      type: IsarType.long,
-    ),
-    r'icon': PropertySchema(
-      id: 7,
-      name: r'icon',
-      type: IsarType.string,
-    ),
-    r'id': PropertySchema(
-      id: 8,
-      name: r'id',
-      type: IsarType.long,
-    ),
+    r'hitPara': PropertySchema(id: 6, name: r'hitPara', type: IsarType.long),
+    r'icon': PropertySchema(id: 7, name: r'icon', type: IsarType.string),
+    r'id': PropertySchema(id: 8, name: r'id', type: IsarType.long),
     r'lastSyncedVersion': PropertySchema(
       id: 9,
       name: r'lastSyncedVersion',
       type: IsarType.long,
     ),
-    r'name': PropertySchema(
-      id: 10,
-      name: r'name',
-      type: IsarType.string,
-    ),
-    r'resId': PropertySchema(
-      id: 11,
-      name: r'resId',
-      type: IsarType.string,
-    ),
+    r'name': PropertySchema(id: 10, name: r'name', type: IsarType.string),
+    r'resId': PropertySchema(id: 11, name: r'resId', type: IsarType.string),
     r'skillDamType': PropertySchema(
       id: 12,
       name: r'skillDamType',
@@ -102,11 +78,7 @@ const SkillModelSchema = CollectionSchema(
       name: r'targetType',
       type: IsarType.long,
     ),
-    r'type': PropertySchema(
-      id: 17,
-      name: r'type',
-      type: IsarType.long,
-    )
+    r'type': PropertySchema(id: 17, name: r'type', type: IsarType.long),
   },
   estimateSize: _skillModelEstimateSize,
   serialize: _skillModelSerialize,
@@ -124,9 +96,9 @@ const SkillModelSchema = CollectionSchema(
           name: r'id',
           type: IndexType.value,
           caseSensitive: false,
-        )
+        ),
       ],
-    )
+    ),
   },
   links: {},
   embeddedSchemas: {},
@@ -331,9 +303,7 @@ extension SkillModelQueryWhereSort
 
   QueryBuilder<SkillModel, SkillModel, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(
-        const IndexWhereClause.any(indexName: r'id'),
-      );
+      return query.addWhereClause(const IndexWhereClause.any(indexName: r'id'));
     });
   }
 }
@@ -341,17 +311,18 @@ extension SkillModelQueryWhereSort
 extension SkillModelQueryWhere
     on QueryBuilder<SkillModel, SkillModel, QWhereClause> {
   QueryBuilder<SkillModel, SkillModel, QAfterWhereClause> isarIdEqualTo(
-      Id isarId) {
+    Id isarId,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: isarId,
-        upper: isarId,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(lower: isarId, upper: isarId),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterWhereClause> isarIdNotEqualTo(
-      Id isarId) {
+    Id isarId,
+  ) {
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
@@ -374,8 +345,9 @@ extension SkillModelQueryWhere
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterWhereClause> isarIdGreaterThan(
-      Id isarId,
-      {bool include = false}) {
+    Id isarId, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.greaterThan(lower: isarId, includeLower: include),
@@ -384,8 +356,9 @@ extension SkillModelQueryWhere
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterWhereClause> isarIdLessThan(
-      Id isarId,
-      {bool include = false}) {
+    Id isarId, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(
         IdWhereClause.lessThan(upper: isarId, includeUpper: include),
@@ -400,21 +373,22 @@ extension SkillModelQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IdWhereClause.between(
-        lower: lowerIsarId,
-        includeLower: includeLower,
-        upper: upperIsarId,
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerIsarId,
+          includeLower: includeLower,
+          upper: upperIsarId,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterWhereClause> idEqualTo(int id) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.equalTo(
-        indexName: r'id',
-        value: [id],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.equalTo(indexName: r'id', value: [id]),
+      );
     });
   }
 
@@ -422,32 +396,40 @@ extension SkillModelQueryWhere
     return QueryBuilder.apply(this, (query) {
       if (query.whereSort == Sort.asc) {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'id',
-              lower: [],
-              upper: [id],
-              includeUpper: false,
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'id',
-              lower: [id],
-              includeLower: false,
-              upper: [],
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'id',
+                lower: [],
+                upper: [id],
+                includeUpper: false,
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'id',
+                lower: [id],
+                includeLower: false,
+                upper: [],
+              ),
+            );
       } else {
         return query
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'id',
-              lower: [id],
-              includeLower: false,
-              upper: [],
-            ))
-            .addWhereClause(IndexWhereClause.between(
-              indexName: r'id',
-              lower: [],
-              upper: [id],
-              includeUpper: false,
-            ));
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'id',
+                lower: [id],
+                includeLower: false,
+                upper: [],
+              ),
+            )
+            .addWhereClause(
+              IndexWhereClause.between(
+                indexName: r'id',
+                lower: [],
+                upper: [id],
+                includeUpper: false,
+              ),
+            );
       }
     });
   }
@@ -457,12 +439,14 @@ extension SkillModelQueryWhere
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'id',
-        lower: [id],
-        includeLower: include,
-        upper: [],
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'id',
+          lower: [id],
+          includeLower: include,
+          upper: [],
+        ),
+      );
     });
   }
 
@@ -471,12 +455,14 @@ extension SkillModelQueryWhere
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'id',
-        lower: [],
-        upper: [id],
-        includeUpper: include,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'id',
+          lower: [],
+          upper: [id],
+          includeUpper: include,
+        ),
+      );
     });
   }
 
@@ -487,13 +473,15 @@ extension SkillModelQueryWhere
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addWhereClause(IndexWhereClause.between(
-        indexName: r'id',
-        lower: [lowerId],
-        includeLower: includeLower,
-        upper: [upperId],
-        includeUpper: includeUpper,
-      ));
+      return query.addWhereClause(
+        IndexWhereClause.between(
+          indexName: r'id',
+          lower: [lowerId],
+          includeLower: includeLower,
+          upper: [upperId],
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -501,133 +489,96 @@ extension SkillModelQueryWhere
 extension SkillModelQueryFilter
     on QueryBuilder<SkillModel, SkillModel, QFilterCondition> {
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundElementEqualTo(int value) {
+  cdRoundElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'cdRound',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'cdRound', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  cdRoundElementGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'cdRound',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'cdRound',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  cdRoundElementLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'cdRound',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'cdRound',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundElementBetween(
+  cdRoundElementBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'cdRound',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'cdRound',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundLengthEqualTo(int length) {
+  cdRoundLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'cdRound',
-        length,
-        true,
-        length,
-        true,
-      );
+      return query.listLength(r'cdRound', length, true, length, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> cdRoundIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'cdRound',
-        0,
-        true,
-        0,
-        true,
-      );
+      return query.listLength(r'cdRound', 0, true, 0, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundIsNotEmpty() {
+  cdRoundIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'cdRound',
-        0,
-        false,
-        999999,
-        true,
-      );
+      return query.listLength(r'cdRound', 0, false, 999999, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
+  cdRoundLengthLessThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'cdRound',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.listLength(r'cdRound', 0, true, length, include);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
+  cdRoundLengthGreaterThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'cdRound',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.listLength(r'cdRound', length, include, 999999, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      cdRoundLengthBetween(
+  cdRoundLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -645,189 +596,151 @@ extension SkillModelQueryFilter
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      contactTypeEqualTo(int value) {
+  contactTypeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'contactType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      contactTypeGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'contactType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      contactTypeLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'contactType',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      contactTypeBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'contactType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaElementEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'damPara',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'damPara',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'damPara',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'damPara',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'damPara',
-        length,
-        true,
-        length,
-        true,
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'contactType', value: value),
       );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  contactTypeGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'contactType',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  contactTypeLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'contactType',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  contactTypeBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'contactType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  damParaElementEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'damPara', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  damParaElementGreaterThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'damPara',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  damParaElementLessThan(int value, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'damPara',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  damParaElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'damPara',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  damParaLengthEqualTo(int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'damPara', length, true, length, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> damParaIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'damPara',
-        0,
-        true,
-        0,
-        true,
-      );
+      return query.listLength(r'damPara', 0, true, 0, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaIsNotEmpty() {
+  damParaIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'damPara',
-        0,
-        false,
-        999999,
-        true,
-      );
+      return query.listLength(r'damPara', 0, false, 999999, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
+  damParaLengthLessThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'damPara',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.listLength(r'damPara', 0, true, length, include);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
+  damParaLengthGreaterThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'damPara',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.listLength(r'damPara', length, include, 999999, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damParaLengthBetween(
+  damParaLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -845,40 +758,38 @@ extension SkillModelQueryFilter
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> damageTypeEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'damageType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'damageType', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damageTypeGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  damageTypeGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'damageType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'damageType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      damageTypeLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  damageTypeLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'damageType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'damageType',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -889,13 +800,15 @@ extension SkillModelQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'damageType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'damageType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -904,11 +817,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'desc',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'desc',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -918,12 +833,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'desc',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'desc',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -933,12 +850,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'desc',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'desc',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -950,14 +869,16 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'desc',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'desc',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -966,11 +887,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'desc',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'desc',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -979,185 +902,154 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'desc',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'desc',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> descContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'desc',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'desc',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> descMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'desc',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'desc',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> descIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'desc',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'desc', value: ''),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> descIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'desc',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'desc', value: ''),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostElementEqualTo(int value) {
+  energyCostElementEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'energyCost',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'energyCost', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  energyCostElementGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'energyCost',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'energyCost',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  energyCostElementLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'energyCost',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'energyCost',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostElementBetween(
+  energyCostElementBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'energyCost',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostLengthEqualTo(int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'energyCost',
-        length,
-        true,
-        length,
-        true,
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'energyCost',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
       );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostIsEmpty() {
+  energyCostLengthEqualTo(int length) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'energyCost',
-        0,
-        true,
-        0,
-        true,
-      );
+      return query.listLength(r'energyCost', length, true, length, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostIsNotEmpty() {
+  energyCostIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'energyCost',
-        0,
-        false,
-        999999,
-        true,
-      );
+      return query.listLength(r'energyCost', 0, true, 0, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
+  energyCostIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'energyCost',
-        0,
-        true,
-        length,
-        include,
-      );
+      return query.listLength(r'energyCost', 0, false, 999999, true);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
+  energyCostLengthLessThan(int length, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'energyCost',
-        length,
-        include,
-        999999,
-        true,
-      );
+      return query.listLength(r'energyCost', 0, true, length, include);
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      energyCostLengthBetween(
+  energyCostLengthGreaterThan(int length, {bool include = false}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(r'energyCost', length, include, 999999, true);
+    });
+  }
+
+  QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
+  energyCostLengthBetween(
     int lower,
     int upper, {
     bool includeLower = true,
@@ -1175,26 +1067,25 @@ extension SkillModelQueryFilter
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> hitParaEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'hitPara',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hitPara', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      hitParaGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  hitParaGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'hitPara',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'hitPara',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1203,11 +1094,13 @@ extension SkillModelQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'hitPara',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'hitPara',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1218,13 +1111,15 @@ extension SkillModelQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'hitPara',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'hitPara',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -1233,11 +1128,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'icon',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1247,12 +1144,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'icon',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1262,12 +1161,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'icon',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1279,14 +1180,16 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'icon',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'icon',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1295,11 +1198,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'icon',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1308,63 +1213,69 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'icon',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> iconContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'icon',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'icon',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> iconMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'icon',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'icon',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> iconIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'icon',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'icon', value: ''),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> iconIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'icon',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'icon', value: ''),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> idEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
+      );
     });
   }
 
@@ -1373,11 +1284,13 @@ extension SkillModelQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1386,11 +1299,13 @@ extension SkillModelQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'id',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1401,23 +1316,25 @@ extension SkillModelQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'id',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> isarIdEqualTo(
-      Id value) {
+    Id value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'isarId', value: value),
+      );
     });
   }
 
@@ -1426,11 +1343,13 @@ extension SkillModelQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'isarId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1439,11 +1358,13 @@ extension SkillModelQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'isarId',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'isarId',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -1454,69 +1375,70 @@ extension SkillModelQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'isarId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'isarId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      lastSyncedVersionEqualTo(int value) {
+  lastSyncedVersionEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'lastSyncedVersion',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'lastSyncedVersion', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      lastSyncedVersionGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  lastSyncedVersionGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'lastSyncedVersion',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'lastSyncedVersion',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      lastSyncedVersionLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  lastSyncedVersionLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'lastSyncedVersion',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'lastSyncedVersion',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      lastSyncedVersionBetween(
+  lastSyncedVersionBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'lastSyncedVersion',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'lastSyncedVersion',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
@@ -1525,11 +1447,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1539,12 +1463,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1554,12 +1480,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1571,14 +1499,16 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'name',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'name',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1587,11 +1517,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1600,53 +1532,59 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> nameContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'name',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'name',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> nameMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'name',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'name',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> nameIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'name',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'name', value: ''),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> nameIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'name',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'name', value: ''),
+      );
     });
   }
 
@@ -1655,11 +1593,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'resId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(
+          property: r'resId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1669,12 +1609,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'resId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'resId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1684,12 +1626,14 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'resId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'resId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1701,14 +1645,16 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'resId',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'resId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1717,11 +1663,13 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'resId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.startsWith(
+          property: r'resId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
@@ -1730,316 +1678,316 @@ extension SkillModelQueryFilter
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'resId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.endsWith(
+          property: r'resId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> resIdContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'resId',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.contains(
+          property: r'resId',
+          value: value,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> resIdMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'resId',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.matches(
+          property: r'resId',
+          wildcard: pattern,
+          caseSensitive: caseSensitive,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> resIdIsEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'resId',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'resId', value: ''),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      resIdIsNotEmpty() {
+  resIdIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'resId',
-        value: '',
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(property: r'resId', value: ''),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillDamTypeEqualTo(int value) {
+  skillDamTypeEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'skillDamType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'skillDamType', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillDamTypeGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  skillDamTypeGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'skillDamType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'skillDamType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillDamTypeLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  skillDamTypeLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'skillDamType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'skillDamType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillDamTypeBetween(
+  skillDamTypeBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'skillDamType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'skillDamType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillFeatureEqualTo(int value) {
+  skillFeatureEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'skillFeature',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'skillFeature', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillFeatureGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  skillFeatureGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'skillFeature',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'skillFeature',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillFeatureLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  skillFeatureLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'skillFeature',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'skillFeature',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillFeatureBetween(
+  skillFeatureBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'skillFeature',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'skillFeature',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillPriorityEqualTo(int value) {
+  skillPriorityEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'skillPriority',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'skillPriority', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillPriorityGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  skillPriorityGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'skillPriority',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'skillPriority',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillPriorityLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  skillPriorityLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'skillPriority',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'skillPriority',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      skillPriorityBetween(
+  skillPriorityBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'skillPriority',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'skillPriority',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      targetCountEqualTo(int value) {
+  targetCountEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'targetCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'targetCount', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      targetCountGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  targetCountGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'targetCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'targetCount',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      targetCountLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  targetCountLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'targetCount',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'targetCount',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      targetCountBetween(
+  targetCountBetween(
     int lower,
     int upper, {
     bool includeLower = true,
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'targetCount',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'targetCount',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> targetTypeEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'targetType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'targetType', value: value),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      targetTypeGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
+  targetTypeGreaterThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'targetType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'targetType',
+          value: value,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition>
-      targetTypeLessThan(
-    int value, {
-    bool include = false,
-  }) {
+  targetTypeLessThan(int value, {bool include = false}) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'targetType',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'targetType',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -2050,23 +1998,25 @@ extension SkillModelQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'targetType',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'targetType',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterFilterCondition> typeEqualTo(
-      int value) {
+    int value,
+  ) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'type',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'type', value: value),
+      );
     });
   }
 
@@ -2075,11 +2025,13 @@ extension SkillModelQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'type',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'type',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -2088,11 +2040,13 @@ extension SkillModelQueryFilter
     bool include = false,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'type',
-        value: value,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'type',
+          value: value,
+        ),
+      );
     });
   }
 
@@ -2103,13 +2057,15 @@ extension SkillModelQueryFilter
     bool includeUpper = true,
   }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'type',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'type',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
     });
   }
 }
@@ -2201,7 +2157,7 @@ extension SkillModelQuerySortBy
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterSortBy>
-      sortByLastSyncedVersionDesc() {
+  sortByLastSyncedVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastSyncedVersion', Sort.desc);
     });
@@ -2397,7 +2353,7 @@ extension SkillModelQuerySortThenBy
   }
 
   QueryBuilder<SkillModel, SkillModel, QAfterSortBy>
-      thenByLastSyncedVersionDesc() {
+  thenByLastSyncedVersionDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'lastSyncedVersion', Sort.desc);
     });
@@ -2526,8 +2482,9 @@ extension SkillModelQueryWhereDistinct
     });
   }
 
-  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByDesc({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'desc', caseSensitive: caseSensitive);
     });
@@ -2545,8 +2502,9 @@ extension SkillModelQueryWhereDistinct
     });
   }
 
-  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByIcon(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByIcon({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'icon', caseSensitive: caseSensitive);
     });
@@ -2559,21 +2517,23 @@ extension SkillModelQueryWhereDistinct
   }
 
   QueryBuilder<SkillModel, SkillModel, QDistinct>
-      distinctByLastSyncedVersion() {
+  distinctByLastSyncedVersion() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'lastSyncedVersion');
     });
   }
 
-  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByName(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByName({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'name', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByResId(
-      {bool caseSensitive = true}) {
+  QueryBuilder<SkillModel, SkillModel, QDistinct> distinctByResId({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'resId', caseSensitive: caseSensitive);
     });

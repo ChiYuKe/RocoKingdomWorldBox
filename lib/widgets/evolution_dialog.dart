@@ -3,18 +3,23 @@ import 'package:isar/isar.dart';
 import '../models/pet_model.dart';
 import '../models/pet_evolution.dart';
 
-/// 进化节点强类型定义
-class EvolutionNode {
+class EvolutionViewNode {
   final int id;
-  final String name; // 名称字段
+  final String name;
   final String portraitRes;
   final String iconRes;
+  final int stage;
+  final int level;
+  final List<PetType> types;
 
-  const EvolutionNode({
+  const EvolutionViewNode({
     required this.id,
     required this.name,
     required this.portraitRes,
     required this.iconRes,
+    required this.stage,
+    required this.level,
+    required this.types,
   });
 }
 
@@ -28,9 +33,9 @@ class EvolutionDialog extends StatefulWidget {
 }
 
 class _EvolutionDialogState extends State<EvolutionDialog> {
-  List<EvolutionNode> _evolutionChain = [];
-  EvolutionNode? _currentNode;
-  
+  List<EvolutionViewNode> _evolutionChain = [];
+  EvolutionViewNode? _currentNode;
+
   bool _isHoveringShiny = false;
   bool _isLockedShiny = false;
   bool _isLoading = true;
@@ -47,37 +52,45 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
       final isar = Isar.getInstance();
       if (isar == null) return;
 
-      // 收集所有可能的进化 ID
       final List<int> allChainPetIds = [];
-      
-      // 如果 petEvolutionId 为空，则仅展示自己
+      final Map<int, EvolutionNode> chainNodeByPetId = {};
+
       if (widget.petModel.petEvolutionId.isEmpty) {
         allChainPetIds.add(widget.petModel.id);
       } else {
-        // 遍历所有的进化 ID（处理多分支）
         for (final evoId in widget.petModel.petEvolutionId) {
-          final evoData = await isar.petEvolutions.filter().idEqualTo(evoId).findFirst();
+          final evoData = await isar.petEvolutions
+              .filter()
+              .idEqualTo(evoId)
+              .findFirst();
           if (evoData?.evolutionChain != null) {
             for (final node in evoData!.evolutionChain!) {
-              if (node.petbaseId != null && !allChainPetIds.contains(node.petbaseId)) {
+              if (node.petbaseId != null &&
+                  !allChainPetIds.contains(node.petbaseId)) {
                 allChainPetIds.add(node.petbaseId!);
+                chainNodeByPetId[node.petbaseId!] = node;
               }
             }
           }
         }
       }
 
-      // 批量转换为 EvolutionNode 强类型对象
-      final List<EvolutionNode> nodes = [];
+      final List<EvolutionViewNode> nodes = [];
       for (final id in allChainPetIds) {
         final model = await isar.petModels.filter().idEqualTo(id).findFirst();
+        final chainNode = chainNodeByPetId[id];
         if (model != null) {
-          nodes.add(EvolutionNode(
-            id: model.id,
-            name: model.name, 
-            portraitRes: model.jlRes,
-            iconRes: model.jlSmallRes,
-          ));
+          nodes.add(
+            EvolutionViewNode(
+              id: model.id,
+              name: model.name,
+              portraitRes: model.jlRes,
+              iconRes: model.jlSmallRes,
+              stage: chainNode?.stage ?? model.stage,
+              level: chainNode?.level ?? 0,
+              types: model.types,
+            ),
+          );
         }
       }
 
@@ -101,8 +114,8 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
   String get _displayImagePath {
     if (_currentNode == null) return "";
     final path = _currentNode!.portraitRes;
-    return (_isHoveringShiny || _isLockedShiny) 
-        ? path.replaceAll('.png', '_yise.png') 
+    return (_isHoveringShiny || _isLockedShiny)
+        ? path.replaceAll('.png', '_yise.png')
         : path;
   }
 
@@ -120,7 +133,11 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(45),
           boxShadow: [
-            BoxShadow(color: Colors.black.withOpacity(0.8), blurRadius: 50, spreadRadius: 10)
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.8),
+              blurRadius: 50,
+              spreadRadius: 10,
+            ),
           ],
         ),
         child: Material(
@@ -141,15 +158,13 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
       flex: 6,
       child: Container(
         color: const Color(0xFF151515),
-        padding: const EdgeInsets.all(40),
+        padding: const EdgeInsets.fromLTRB(40, 38, 32, 36),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildTitle(themeColor),
             const Spacer(),
-            Center(
-              child: _buildEvoTree(_evolutionChain, themeColor),
-            ),
+            _buildEvoTree(_evolutionChain, themeColor),
             const Spacer(),
           ],
         ),
@@ -182,13 +197,22 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
       child: Container(
         decoration: BoxDecoration(
           color: const Color(0xFF222222),
-          border: Border(left: BorderSide(color: Colors.white.withOpacity(0.05), width: 1)),
+          border: Border(
+            left: BorderSide(
+              color: Colors.white.withValues(alpha: 0.05),
+              width: 1,
+            ),
+          ),
         ),
         child: Stack(
           children: [
             _buildBackgroundId(),
             _buildPortrait(themeColor),
-            Positioned(bottom: 30, right: 30, child: _buildShinyButton(themeColor)),
+            Positioned(
+              bottom: 30,
+              right: 30,
+              child: _buildShinyButton(themeColor),
+            ),
           ],
         ),
       ),
@@ -202,7 +226,7 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
       child: Text(
         _currentNode?.id.toString() ?? "",
         style: TextStyle(
-          color: Colors.white.withOpacity(0.02),
+          color: Colors.white.withValues(alpha: 0.02),
           fontSize: 180,
           fontWeight: FontWeight.w900,
         ),
@@ -227,109 +251,235 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
           _displayImagePath,
           key: ValueKey(_displayImagePath),
           fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => Icon(
+          errorBuilder: (_, _, _) => Icon(
             Icons.broken_image,
             size: 120,
-            color: themeColor.withOpacity(0.1),
+            color: themeColor.withValues(alpha: 0.1),
           ),
         ),
       ),
     );
   }
 
-  Widget _buildEvoTree(List<EvolutionNode> chain, Color themeColor) {
-    if (chain.length >= 4) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildEvoNode(chain[0], themeColor),
-          _buildEvoLine(),
-          _buildEvoNode(chain[1], themeColor),
-          _buildBranchPainter(),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildEvoNode(chain[2], themeColor),
-              const SizedBox(height: 30),
-              _buildEvoNode(chain[3], themeColor),
-            ],
-          )
-        ],
+  Widget _buildEvoTree(List<EvolutionViewNode> chain, Color themeColor) {
+    if (chain.isEmpty) {
+      return const Center(
+        child: Text(
+          "暂无进化链数据",
+          style: TextStyle(color: Colors.white54, fontSize: 14),
+        ),
       );
     }
 
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(chain.length, (i) => Row(
-        children: [
-          _buildEvoNode(chain[i], themeColor),
-          if (i < chain.length - 1) _buildEvoLine(),
-        ],
-      )),
-    );
-  }
-
-  Widget _buildEvoNode(EvolutionNode node, Color themeColor) {
-    final bool isSelected = _currentNode?.id == node.id;
-    return Column(
-      children: [
-        GestureDetector(
-          onTap: () => setState(() => _currentNode = node),
-          child: AnimatedContainer(
-            duration: const Duration(milliseconds: 300),
-            width: 78,
-            height: 78,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: isSelected ? themeColor.withOpacity(0.15) : Colors.black,
-              border: Border.all(
-                color: isSelected ? themeColor : Colors.white12, 
-                width: isSelected ? 2.5 : 1.5
-              ),
-              boxShadow: isSelected 
-                  ? [BoxShadow(color: themeColor.withOpacity(0.3), blurRadius: 12, spreadRadius: 2)] 
-                  : [],
-            ),
-            child: ClipOval(
-              child: Image.asset(
-                node.iconRes,
-                fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => const Icon(Icons.pets, color: Colors.white10),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          "No.${node.id}",
-          style: TextStyle(
-            color: isSelected ? Colors.white : Colors.white54,
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildEvoLine() {
     return Container(
-      width: 30,
-      height: 4,
-      margin: const EdgeInsets.symmetric(horizontal: 5),
+      height: 220,
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 20),
       decoration: BoxDecoration(
-        color: Colors.white12,
-        borderRadius: BorderRadius.circular(2),
+        color: Colors.white.withValues(alpha: 0.035),
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+      ),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final timeline = Row(
+            mainAxisSize: MainAxisSize.min,
+            children: List.generate(chain.length, (index) {
+              final node = chain[index];
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildEvoNode(node, themeColor),
+                  if (index < chain.length - 1)
+                    _buildEvoConnector(chain[index + 1], themeColor),
+                ],
+              );
+            }),
+          );
+
+          final estimatedWidth = chain.length * 98 + (chain.length - 1) * 54;
+          if (estimatedWidth <= constraints.maxWidth) {
+            return Center(child: timeline);
+          }
+
+          return SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            physics: const BouncingScrollPhysics(),
+            child: timeline,
+          );
+        },
       ),
     );
   }
 
-  Widget _buildBranchPainter() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(horizontal: 10),
-      child: CustomPaint(
-        size: Size(40, 110),
-        painter: EvoBranchPainter(color: Colors.white24),
+  Widget _buildEvoNode(EvolutionViewNode node, Color themeColor) {
+    final bool isSelected = _currentNode?.id == node.id;
+
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () => setState(() => _currentNode = node),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 260),
+          curve: Curves.easeOutCubic,
+          width: 98,
+          padding: const EdgeInsets.fromLTRB(8, 12, 8, 10),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? themeColor.withValues(alpha: 0.15)
+                : Colors.black.withValues(alpha: 0.28),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(
+              color: isSelected
+                  ? themeColor.withValues(alpha: 0.95)
+                  : Colors.white.withValues(alpha: 0.08),
+              width: isSelected ? 2 : 1,
+            ),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: themeColor.withValues(alpha: 0.3),
+                      blurRadius: 24,
+                      spreadRadius: 1,
+                    ),
+                  ]
+                : [],
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    width: 66,
+                    height: 66,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: const Color(0xFF101010),
+                      border: Border.all(
+                        color: isSelected
+                            ? Colors.white.withValues(alpha: 0.8)
+                            : Colors.white.withValues(alpha: 0.12),
+                      ),
+                    ),
+                    child: ClipOval(
+                      child: Image.asset(
+                        node.iconRes,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) =>
+                            const Icon(Icons.pets, color: Colors.white24),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    top: -7,
+                    child: _buildStageBadge(node, themeColor, isSelected),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 9),
+              Text(
+                node.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                "No. ${node.id}",
+                style: TextStyle(
+                  color: isSelected
+                      ? Colors.white.withValues(alpha: 0.85)
+                      : Colors.white38,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStageBadge(
+    EvolutionViewNode node,
+    Color themeColor,
+    bool isSelected,
+  ) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: isSelected ? themeColor : const Color(0xFF2A2A2A),
+        borderRadius: BorderRadius.circular(99),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.16)),
+      ),
+      child: Text(
+        "阶段 ${node.stage == 0 ? '-' : node.stage}",
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 9,
+          fontWeight: FontWeight.w900,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildEvoConnector(EvolutionViewNode next, Color themeColor) {
+    final label = next.level > 0 ? "Lv.${next.level}" : "进化";
+
+    return SizedBox(
+      width: 54,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.06),
+              borderRadius: BorderRadius.circular(99),
+              border: Border.all(color: Colors.white.withValues(alpha: 0.07)),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                color: themeColor.withValues(alpha: 0.9),
+                fontSize: 9,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+          ),
+          const SizedBox(height: 11),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  height: 2,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        Colors.white.withValues(alpha: 0.09),
+                        themeColor.withValues(alpha: 0.7),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: themeColor.withValues(alpha: 0.95),
+                size: 20,
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+        ],
       ),
     );
   }
@@ -347,14 +497,19 @@ class _EvolutionDialogState extends State<EvolutionDialog> {
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: isActive ? themeColor.withOpacity(0.2) : Colors.white.withOpacity(0.05),
-            border: Border.all(color: isActive ? themeColor : Colors.white24, width: 1.5),
+            color: isActive
+                ? themeColor.withValues(alpha: 0.2)
+                : Colors.white.withValues(alpha: 0.05),
+            border: Border.all(
+              color: isActive ? themeColor : Colors.white24,
+              width: 1.5,
+            ),
           ),
           child: Image.asset(
             'assets/ui/ui_shiny.png',
             width: 40,
             height: 40,
-            errorBuilder: (_, __, ___) => Icon(
+            errorBuilder: (_, _, _) => Icon(
               Icons.auto_awesome,
               color: isActive ? themeColor : Colors.white54,
               size: 30,
@@ -377,18 +532,33 @@ class EvoBranchPainter extends CustomPainter {
       ..style = PaintingStyle.stroke
       ..strokeWidth = 4
       ..strokeCap = StrokeCap.round;
-    
+
     final path = Path();
     path.moveTo(0, size.height / 2);
-    path.cubicTo(size.width * 0.5, size.height * 0.5, size.width * 0.5, 0, size.width, 0);
+    path.cubicTo(
+      size.width * 0.5,
+      size.height * 0.5,
+      size.width * 0.5,
+      0,
+      size.width,
+      0,
+    );
     path.moveTo(0, size.height / 2);
-    path.cubicTo(size.width * 0.5, size.height * 0.5, size.width * 0.5, size.height, size.width, size.height);
-    
+    path.cubicTo(
+      size.width * 0.5,
+      size.height * 0.5,
+      size.width * 0.5,
+      size.height,
+      size.width,
+      size.height,
+    );
+
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(covariant EvoBranchPainter oldDelegate) => oldDelegate.color != color;
+  bool shouldRepaint(covariant EvoBranchPainter oldDelegate) =>
+      oldDelegate.color != color;
 }
 
 class InstantOutCurve extends Curve {

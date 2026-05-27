@@ -19,8 +19,4 @@ class _AutoScriptUIState extends State<AutoScriptUI> {
       ),
     );
   }
-
-
-
-
 }

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import '../../models/plugin_interface.dart';
-import '../../widgets/plugin_page_template.dart'; 
+import '../../widgets/plugin_page_template.dart';
 import 'widgets/update_pet_data_ui.dart';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class UpdatePetDataPlugin implements RocoPlugin {
-  
   @override
   String get id => "com.roco.plugin.update_pet_data";
   @override
@@ -19,10 +18,10 @@ class UpdatePetDataPlugin implements RocoPlugin {
   String get author => "ChiYuKe";
 
   @override
-  bool get isLocked => true; 
+  bool get isLocked => true;
 
   @override
-  String get correctKey => dotenv.env['PLUGIN_KEY'] ?? "default_key"; 
+  String get correctKey => dotenv.env['PLUGIN_KEY'] ?? "default_key";
 
   @override
   Widget buildIcon(BuildContext context, Color accentColor) {
@@ -33,11 +32,9 @@ class UpdatePetDataPlugin implements RocoPlugin {
   Widget buildEntryPage(BuildContext context, Color accentColor) {
     return PluginPageTemplate(
       title: name,
-      subTitle: description, 
+      subTitle: description,
       accentColor: accentColor,
-      body: UpdatePetDataUI(
-        accentColor: accentColor,
-      ),
+      body: UpdatePetDataUI(accentColor: accentColor),
     );
   }
 }

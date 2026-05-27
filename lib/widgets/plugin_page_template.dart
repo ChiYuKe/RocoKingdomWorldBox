@@ -24,23 +24,22 @@ class PluginPageTemplate extends StatelessWidget {
           children: [
             // 修复版的导航栏
             _buildHeader(context),
-            
+
             // 顶部分割线
             Container(
               height: 1,
               width: double.infinity,
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
             ),
-            
+
             // 插件主体内容
-            Expanded(
-              child: body,
-            ),
+            Expanded(child: body),
           ],
         ),
       ),
     );
   }
+
   // 构建导航栏，包含原生拖动、双击最大化/还原以及返回按钮
   Widget _buildHeader(BuildContext context) {
     return SizedBox(
@@ -48,9 +47,7 @@ class PluginPageTemplate extends StatelessWidget {
       child: Stack(
         children: [
           // 底层原生拖动感应
-          const DragToMoveArea(
-            child: SizedBox.expand(),
-          ),
+          const DragToMoveArea(child: SizedBox.expand()),
 
           // 中层双击感应
           GestureDetector(
@@ -78,7 +75,7 @@ class PluginPageTemplate extends StatelessWidget {
                     padding: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       border: Border.all(
-                        color: Colors.white.withOpacity(0.1),
+                        color: Colors.white.withValues(alpha: 0.1),
                         width: 1,
                       ),
                       borderRadius: BorderRadius.circular(4),
@@ -131,7 +128,7 @@ class PluginPageTemplate extends StatelessWidget {
                                 child: Text(
                                   subTitle,
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.3),
+                                    color: Colors.white.withValues(alpha: 0.3),
                                     fontSize: 10,
                                     fontWeight: FontWeight.w500,
                                     letterSpacing: 0.5,
@@ -143,7 +140,11 @@ class PluginPageTemplate extends StatelessWidget {
                         ),
                         Opacity(
                           opacity: 0.5,
-                          child: Icon(Icons.layers_outlined, color: accentColor, size: 18),
+                          child: Icon(
+                            Icons.layers_outlined,
+                            color: accentColor,
+                            size: 18,
+                          ),
                         ),
                       ],
                     ),

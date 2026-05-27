@@ -8,6 +8,6 @@ class SyncConfig {
 
   @Index(unique: true, replace: true)
   late String fileName; // 存储 "pet_base_conf", "skill_conf" 等标识符
-  
+
   late int lastSyncedVersion;
 }
